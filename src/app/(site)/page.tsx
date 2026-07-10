@@ -94,8 +94,8 @@ export default function Home() {
               </div>
             </Reveal>
           </div>
-          <Reveal delay={200} className="hidden lg:block">
-            <div className="float-y card overflow-hidden p-2">
+          <Reveal delay={200}>
+            <div className="float-y card overflow-hidden p-1.5 sm:p-2">
               <TricityMap className="aspect-square" />
             </div>
           </Reveal>
