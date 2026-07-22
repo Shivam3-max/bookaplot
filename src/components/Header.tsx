@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSaved } from "@/context/SavedContext";
+import { useNetwork } from "@/context/NetworkContext";
 
 const NAV = [
   { href: "/deals", label: "Deals" },
@@ -19,6 +20,7 @@ const NAV = [
 export default function Header() {
   const pathname = usePathname();
   const { saved } = useSaved();
+  const { account } = useNetwork();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -73,9 +75,15 @@ export default function Header() {
               </span>
             )}
           </Link>
-          <Link href="/book-visit" className="btn-primary !px-4 !py-2 !text-[13px]">
-            Book Site Visit
-          </Link>
+          {account ? (
+            <Link href="/portal" className="btn-primary !px-4 !py-2 !text-[13px]">
+              {account.role === "cp" ? "CP Dashboard" : "Investor Dashboard"}
+            </Link>
+          ) : (
+            <Link href="/join" className="btn-gold !px-4 !py-2 !text-[13px]">
+              Join Network
+            </Link>
+          )}
         </div>
 
         <button
@@ -97,9 +105,15 @@ export default function Header() {
                 {n.label}
               </Link>
             ))}
-            <Link href="/book-visit" className="btn-primary mt-2 justify-center">
-              Book Site Visit
-            </Link>
+            {account ? (
+              <Link href="/portal" className="btn-primary mt-2 justify-center">
+                Open {account.role === "cp" ? "CP" : "Investor"} Dashboard
+              </Link>
+            ) : (
+              <Link href="/join" className="btn-gold mt-2 justify-center">
+                Join Network
+              </Link>
+            )}
           </nav>
         </div>
       )}

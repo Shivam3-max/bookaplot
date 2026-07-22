@@ -5,7 +5,7 @@ import TricityMap from "@/components/TricityMap";
 import Reveal from "@/components/Reveal";
 import SectionHead from "@/components/SectionHead";
 import CountUp from "@/components/CountUp";
-import HeroSearch from "@/components/HeroSearch";
+import { CP_BENEFITS, INVESTOR_BENEFITS } from "@/lib/network-data";
 
 const WHY_BLOCKS = [
   { t: "Curated Deal Discovery", d: "We shortlist opportunities with actual upside logic behind them — not everything that's merely available." },
@@ -55,14 +55,14 @@ export default function Home() {
             <Reveal>
               <span className="chip badge-gold">
                 <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-gold" />
-                Private deal intelligence for Tricity
+                A private network — not another listing portal
               </span>
             </Reveal>
             <Reveal delay={80}>
-              <h1 className="mt-5 text-4xl font-black leading-[1.05] sm:text-5xl lg:text-[3.4rem]">
-                Discover Undervalued Property Deals Across{" "}
+              <h1 className="mt-5 text-4xl font-black leading-[1.05] sm:text-5xl lg:text-[3.3rem]">
+                Tricity&apos;s CP &amp; Investor-First{" "}
                 <span className="relative inline-block">
-                  <span style={{ color: "var(--green)" }}>Tricity</span>
+                  <span style={{ color: "var(--green)" }}>Deal Network</span>
                   <svg className="absolute -bottom-1 left-0 w-full" height="8" viewBox="0 0 120 8" preserveAspectRatio="none">
                     <path d="M2 6 Q60 0 118 5" stroke="var(--gold)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                   </svg>
@@ -71,24 +71,35 @@ export default function Home() {
             </Reveal>
             <Reveal delay={160}>
               <p className="mt-5 max-w-xl text-[15.5px] leading-relaxed text-graphite">
-                Curated undervalued plots, residential opportunities, commercial assets and
-                growth-corridor deals across Chandigarh, Mohali, Panchkula, Zirakpur, New Chandigarh,
-                Kharar and nearby regions — selected, benchmarked, verified.
+                Exclusive verified mandates, territory rights, routed leads and customized creatives
+                for channel partners. Verified pricing, the Give &amp; Ask desk and desperate-deal
+                access for investors. The public sees glimpses — the network sees everything.
               </p>
             </Reveal>
             <Reveal delay={240}>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/deals" className="btn-primary">Explore Deals</Link>
-                <Link href="/book-visit" className="btn-gold">Book a Site Visit</Link>
-                <Link href="/map" className="btn-ghost">View Tricity Map</Link>
+                <Link href="/join?as=cp" className="btn-gold">Join as Channel Partner</Link>
+                <Link href="/join?as=investor" className="btn-primary">Join as Investor</Link>
+                <Link href="/deals" className="btn-ghost">See Deal Glimpses</Link>
               </div>
             </Reveal>
             <Reveal delay={320}>
-              <HeroSearch />
+              <div className="card mt-8 grid max-w-xl grid-cols-3 divide-x divide-line">
+                {[
+                  ["Sellers", "List a property", "/join?as=seller"],
+                  ["Channel Partners", "Lock a territory", "/join?as=cp"],
+                  ["Investors", "Post a requirement", "/join?as=investor"],
+                ].map(([t, d, href]) => (
+                  <Link key={t} href={href} className="group p-3.5 text-center transition-colors hover:bg-paper">
+                    <p className="font-display text-[13px] font-black group-hover:underline">{t}</p>
+                    <p className="text-[11px] text-graphite">{d}</p>
+                  </Link>
+                ))}
+              </div>
             </Reveal>
             <Reveal delay={400}>
               <div className="mt-5 flex flex-wrap gap-2">
-                {["Curated Tricity Deals", "Verified Location Data", "Investment-Focused", "Site Visit Assistance", "Expert Support"].map((c) => (
+                {["Exclusive Mandates", "Territory Rights", "Territory Leads", "Custom Creatives", "Give & Ask Desk"].map((c) => (
                   <span key={c} className="chip">{c}</span>
                 ))}
               </div>
@@ -127,13 +138,115 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 2b — NETWORK BENEFITS */}
+      <section className="py-16">
+        <div className="container-x">
+          <SectionHead
+            eyebrow="Why the network"
+            title="Built CP-First. Built Investor-First."
+            sub="We don't sell to the public first — we power the people who move deals. That's the whole model."
+          />
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            <Reveal>
+              <div className="card h-full overflow-hidden">
+                <div className="bg-ink px-6 py-4">
+                  <p className="font-display font-black text-white">For Channel Partners</p>
+                  <p className="text-xs text-white/60">One CP per territory. Your zone, your mandates, your leads.</p>
+                </div>
+                <div className="grid gap-0 divide-y divide-line">
+                  {CP_BENEFITS.map((b, i) => (
+                    <div key={b.t} className="flex items-start gap-3.5 p-5">
+                      <span className="font-display text-lg font-black" style={{ color: "var(--gold)" }}>{String(i + 1).padStart(2, "0")}</span>
+                      <div>
+                        <p className="font-display text-[14.5px] font-bold">{b.t}</p>
+                        <p className="mt-0.5 text-[13px] leading-relaxed text-graphite">{b.d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-5 pt-0">
+                  <Link href="/join?as=cp" className="btn-gold w-full justify-center">Become a Channel Partner</Link>
+                </div>
+              </div>
+            </Reveal>
+            <Reveal delay={120}>
+              <div className="card h-full overflow-hidden">
+                <div className="px-6 py-4" style={{ background: "var(--green)" }}>
+                  <p className="font-display font-black text-white">For Investors</p>
+                  <p className="text-xs text-white/70">Stop hunting. Post what you want — the platform reverts.</p>
+                </div>
+                <div className="grid gap-0 divide-y divide-line">
+                  {INVESTOR_BENEFITS.map((b, i) => (
+                    <div key={b.t} className="flex items-start gap-3.5 p-5">
+                      <span className="font-display text-lg font-black" style={{ color: "var(--green)" }}>{String(i + 1).padStart(2, "0")}</span>
+                      <div>
+                        <p className="font-display text-[14.5px] font-bold">{b.t}</p>
+                        <p className="mt-0.5 text-[13px] leading-relaxed text-graphite">{b.d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-5 pt-0">
+                  <Link href="/join?as=investor" className="btn-primary w-full justify-center">Join as Investor</Link>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* 2c — GIVE & ASK HIGHLIGHT */}
+      <section className="border-y border-line bg-ink py-16 text-white">
+        <div className="container-x grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
+          <Reveal>
+            <span className="chip badge-gold">
+              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-gold" />
+              Signature feature — only on BookAPlot
+            </span>
+            <h2 className="mt-4 text-3xl font-black leading-tight sm:text-4xl">
+              Give &amp; Ask: You State the Requirement. <span style={{ color: "var(--gold)" }}>We Revert with the Deal.</span>
+            </h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-white/70">
+              Every portal makes investors hunt through listings. We flipped it. Post your exact
+              requirement — budget, asset type, location, urgency — and the platform matches it
+              against live mandates and off-market inventory, then reverts to you directly.
+            </p>
+            <p className="mt-3 max-w-xl text-sm font-bold" style={{ color: "var(--gold)" }}>
+              Cash-ready for a desperate deal? Flag it &ldquo;urgent&rdquo; and the distress-desk
+              routes seller-urgency pricing to you first.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/join?as=investor" className="btn-gold">Post Your Requirement</Link>
+              <Link href="/why-bookaplot" className="btn border border-white/30 text-white hover:border-white">How Matching Works</Link>
+            </div>
+          </Reveal>
+          <Reveal delay={140}>
+            <div className="space-y-3">
+              {[
+                { n: "1", t: "You give the ask", d: "“₹1.5–2 Cr, tenanted commercial frontage, Zirakpur, ready in 30 days.”" },
+                { n: "2", t: "Platform matches", d: "The desk screens live mandates, off-market stock and CP territories for fits." },
+                { n: "3", t: "We revert to you", d: "Matched sheets, videos and visit slots land in your dashboard — usually within 24 hours." },
+              ].map((s) => (
+                <div key={s.n} className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display font-black" style={{ background: "var(--gold)", color: "#fff" }}>{s.n}</span>
+                  <div>
+                    <p className="font-display font-bold">{s.t}</p>
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-white/65">{s.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* 3 — FEATURED DEALS */}
       <section className="py-16">
         <div className="container-x">
           <SectionHead
-            eyebrow="This week"
-            title="Featured Opportunities This Week"
-            sub="A curated selection of deals that stand out on pricing, location potential, connectivity, demand outlook, or early-entry advantage."
+            eyebrow="Glimpses only — full detail inside"
+            title="This Week's Network Mandates"
+            sub="The public sees the glimpse: zone, asset type and the size of the price gap. Members see pricing, papers, commission and kits."
           />
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((d, i) => (
@@ -375,16 +488,16 @@ export default function Home() {
               <div className="pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-green opacity-25 blur-3xl" />
               <p className="eyebrow">Ready when you are</p>
               <h2 className="mx-auto mt-3 max-w-xl text-3xl font-black sm:text-4xl">
-                Start with the Right Opportunity
+                The Network Is the Product
               </h2>
               <p className="mx-auto mt-4 max-w-lg text-white/70">
-                Whether you&apos;re buying for appreciation, end-use, or long-term security, BookAPlot
-                helps you begin with stronger deal discovery.
+                Channel partners lock territories. Investors post requirements. Sellers submit
+                inventory. The platform connects all three — and everyone moves faster.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Link href="/deals" className="btn-gold">Explore Deals</Link>
-                <Link href="/book-visit" className="btn !bg-white !text-ink hover:!bg-paper">Book a Site Visit</Link>
-                <Link href="/contact" className="btn border border-white/30 text-white hover:border-white">Talk to an Expert</Link>
+                <Link href="/join?as=cp" className="btn-gold">Join as Channel Partner</Link>
+                <Link href="/join?as=investor" className="btn !bg-white !text-ink hover:!bg-paper">Join as Investor</Link>
+                <Link href="/join?as=seller" className="btn border border-white/30 text-white hover:border-white">List a Property</Link>
               </div>
             </div>
           </Reveal>

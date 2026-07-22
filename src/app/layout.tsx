@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { SavedProvider } from "@/context/SavedContext";
+import { NetworkProvider } from "@/context/NetworkContext";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "BookAPlot — Undervalued Property Deals Across Tricity",
+    default: "BookAPlot — Tricity's CP & Investor-First Real Estate Network",
     template: "%s | BookAPlot",
   },
   description:
-    "Curated undervalued plots, residential and commercial real estate opportunities across Chandigarh, Mohali, Panchkula, Zirakpur, New Chandigarh and Kharar.",
+    "Exclusive verified mandates, territory rights and the Give & Ask desk — Tricity's channel-partner and investor network across Chandigarh, Mohali, Panchkula, Zirakpur, New Chandigarh and Kharar.",
 };
 
 export default function RootLayout({
@@ -26,7 +27,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <SavedProvider>{children}</SavedProvider>
+        <NetworkProvider>
+          <SavedProvider>{children}</SavedProvider>
+        </NetworkProvider>
       </body>
     </html>
   );

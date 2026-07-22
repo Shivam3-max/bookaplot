@@ -9,6 +9,7 @@ import DealCard from "@/components/DealCard";
 import LeadForm from "@/components/LeadForm";
 import DealActions from "./DealActions";
 import Faq from "./Faq";
+import Gate from "@/components/Gate";
 
 export function generateStaticParams() {
   return DEALS.map((d) => ({ slug: d.slug }));
@@ -68,6 +69,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
                 {deal.microLocation}
               </p>
 
+              <Gate label="Exact pricing, benchmarks and papers are member-only. Public sees the glimpse — the network sees the numbers.">
               <div className="card mt-5 p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -92,6 +94,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
                   </p>
                 )}
               </div>
+              </Gate>
 
               <DealActions deal={deal} />
             </Reveal>
@@ -123,6 +126,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
           {/* price snapshot */}
           <Reveal>
             <h2 className="font-display text-2xl font-black">Price Snapshot</h2>
+            <Gate compact>
             <div className="card mt-4 overflow-hidden">
               <table className="w-full text-sm">
                 <tbody>
@@ -141,6 +145,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
                 </tbody>
               </table>
             </div>
+            </Gate>
           </Reveal>
 
           {/* property details */}
@@ -235,6 +240,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
               <p className="mt-3 text-xs font-bold" style={{ color: "var(--gold)" }}>Explore {location.name} →</p>
             </Link>
           )}
+          <Gate compact>
           <div className="card p-5">
             <p className="eyebrow">Documents</p>
             <div className="mt-3 space-y-2">
@@ -247,6 +253,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
             </div>
             <p className="mt-3 text-[11px] text-graphite">Documents shared after a quick verification call.</p>
           </div>
+          </Gate>
         </aside>
       </div>
 

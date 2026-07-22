@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { DEALS } from "@/lib/data";
 import { LEADS, VISITS, SUBMISSIONS, NOTIFICATIONS } from "@/lib/admin-data";
+import { MANDATES } from "@/lib/network-data";
+import { useNetwork } from "@/context/NetworkContext";
 import { inr } from "@/lib/format";
 
 const FUNNEL = [
@@ -12,16 +16,26 @@ const FUNNEL = [
 ];
 
 export default function AdminDashboard() {
+  const { partners, asks } = useNetwork();
   const liveDeals = DEALS.length;
+  const mandateCount = DEALS.filter((d) => MANDATES[d.slug]).length;
   const newLeads = LEADS.filter((l) => l.stage === "New").length;
   const pendingSubs = SUBMISSIONS.filter((s) => s.status === "Pending Review").length;
   const upcomingVisits = VISITS.filter((v) => ["Requested", "Confirmed"].includes(v.status)).length;
+  const pendingPartners = partners.filter((p) => p.status === "Pending").length;
+  const openAsks = asks.filter((a) => a.status === "Open").length;
+  const cps = partners.filter((p) => p.role === "cp").length;
+  const investors = partners.filter((p) => p.role === "investor").length;
 
   const widgets = [
-    { label: "Deals live", value: liveDeals, href: "/admin/deals", tone: "var(--green)" },
+    { label: "Mandates live", value: mandateCount, href: "/admin/deals", tone: "var(--green)" },
+    { label: "Channel partners", value: cps, href: "/admin/partners", tone: "var(--gold)" },
+    { label: "Investors on network", value: investors, href: "/admin/partners", tone: "var(--steel)" },
+    { label: "Asks awaiting revert", value: openAsks, href: "/admin/asks", tone: "var(--red)" },
+    { label: "Pending verifications", value: pendingPartners, href: "/admin/partners", tone: "var(--red)" },
     { label: "New leads today", value: newLeads, href: "/admin/leads", tone: "var(--gold)" },
     { label: "Site visits booked", value: upcomingVisits, href: "/admin/visits", tone: "var(--steel)" },
-    { label: "Pending submissions", value: pendingSubs, href: "/admin/submissions", tone: "var(--red)" },
+    { label: "Pending submissions", value: pendingSubs, href: "/admin/submissions", tone: "var(--green)" },
   ];
 
   const topDeals = [...DEALS].sort((a, b) => b.score - a.score).slice(0, 5);
@@ -29,8 +43,8 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-black">Dashboard</h1>
-        <p className="text-sm text-graphite">Run the whole business from one place.</p>
+        <h1 className="font-display text-2xl font-black">Network Command Centre</h1>
+        <p className="text-sm text-graphite">CPs, investors, mandates, asks, leads — the whole network from one place. {liveDeals} deals on platform.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

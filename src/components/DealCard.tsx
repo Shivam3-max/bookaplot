@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Deal } from "@/lib/types";
 import { inr, inrFull, pctBelow } from "@/lib/format";
 import { useSaved } from "@/context/SavedContext";
+import { useNetwork } from "@/context/NetworkContext";
 import ScoreRing from "./ScoreRing";
 import DealVisual from "./DealVisual";
 
@@ -16,9 +17,11 @@ const badgeClass = (b: string) =>
 
 export default function DealCard({ deal }: { deal: Deal }) {
   const { saved, compare, toggleSaved, toggleCompare } = useSaved();
+  const { account } = useNetwork();
   const isSaved = saved.includes(deal.slug);
   const inCompare = compare.includes(deal.slug);
   const below = pctBelow(deal.pricePerUnit, deal.benchmarkPerUnit);
+  const unlocked = !!account;
 
   return (
     <article className="card card-hover group relative flex flex-col overflow-hidden">
@@ -56,20 +59,35 @@ export default function DealCard({ deal }: { deal: Deal }) {
           <ScoreRing score={deal.score} size={42} />
         </div>
 
-        <div className="mt-3 flex items-end justify-between rounded-xl bg-paper px-3 py-2.5">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-graphite">Starting</p>
-            <p className="font-display text-lg font-black">{inr(deal.price)}</p>
+        {unlocked ? (
+          <div className="mt-3 flex items-end justify-between rounded-xl bg-paper px-3 py-2.5">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-graphite">Starting</p>
+              <p className="font-display text-lg font-black">{inr(deal.price)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-graphite">
+                {inrFull(deal.pricePerUnit)}/{deal.unit}
+              </p>
+              {below > 0 && (
+                <p className="text-xs font-bold text-green">{below}% below benchmark</p>
+              )}
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-graphite">
-              {inrFull(deal.pricePerUnit)}/{deal.unit}
-            </p>
+        ) : (
+          <div className="mt-3 flex items-center justify-between rounded-xl bg-paper px-3 py-2.5">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-graphite">Network pricing</p>
+              <p className="flex items-center gap-1.5 font-display text-lg font-black tracking-widest text-graphite">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+                ₹ ·····
+              </p>
+            </div>
             {below > 0 && (
-              <p className="text-xs font-bold text-green">{below}% below benchmark</p>
+              <p className="rounded-lg bg-green-soft px-2 py-1 text-xs font-bold text-green">▼ {below}% under market</p>
             )}
           </div>
-        </div>
+        )}
 
         <ul className="mt-3 space-y-1">
           {deal.highlights.slice(0, 3).map((h) => (

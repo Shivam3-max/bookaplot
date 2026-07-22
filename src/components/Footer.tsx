@@ -13,13 +13,14 @@ const COLS = [
     ],
   },
   {
-    title: "Company",
+    title: "Network",
     links: [
+      { href: "/join?as=cp", label: "Join as Channel Partner" },
+      { href: "/join?as=investor", label: "Join as Investor" },
+      { href: "/join?as=seller", label: "Sell / List Property" },
       { href: "/about", label: "About BookAPlot" },
       { href: "/why-bookaplot", label: "Why BookAPlot" },
       { href: "/contact", label: "Contact" },
-      { href: "/partner", label: "Partner With Us" },
-      { href: "/list-property", label: "Sell / List Property" },
     ],
   },
   {
@@ -49,8 +50,9 @@ export default function Footer() {
             </span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
-            Curated undervalued real estate opportunities across Chandigarh, Mohali, Panchkula,
-            Zirakpur, New Chandigarh, Kharar and Tricity&apos;s growth corridors.
+            Tricity&apos;s CP &amp; investor-first real estate network — exclusive verified mandates,
+            territory rights, and the Give &amp; Ask desk across Chandigarh, Mohali, Panchkula,
+            Zirakpur, New Chandigarh and Kharar.
           </p>
           <div className="mt-5 space-y-1.5 text-sm text-white/70">
             <p>+91 98XXX XXXXX &nbsp;·&nbsp; hello@bookaplot.com</p>
