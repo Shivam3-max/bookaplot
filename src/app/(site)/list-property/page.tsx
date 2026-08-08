@@ -3,9 +3,9 @@ import Reveal from "@/components/Reveal";
 import LeadForm from "@/components/LeadForm";
 
 export const metadata: Metadata = {
-  title: "Sell / List Your Property — Submit to BookAPlot",
+  title: "Sell / List Your Property — Submit to Mondato",
   description:
-    "Own or represent a property in Tricity? Submit it to BookAPlot for curated review and premium presentation to serious buyers.",
+    "Own or represent a property in Tricity? Submit it to Mondato for curated review and premium presentation to serious buyers.",
 };
 
 const WHAT = ["Plots", "Residential units", "Commercial property", "SCO / booths", "Township inventory", "Pre-launch opportunities", "Land parcels"];
@@ -13,7 +13,7 @@ const WHAT = ["Plots", "Residential units", "Commercial property", "SCO / booths
 const WHY = [
   { t: "Premium presentation", d: "Your property presented with benchmark context and opportunity logic — not buried in a feed." },
   { t: "Targeted audience", d: "A Tricity-focused buyer base actively evaluating deals, not casual browsers." },
-  { t: "Curated positioning", d: "Selection means attention. Being on BookAPlot signals your inventory cleared a bar." },
+  { t: "Curated positioning", d: "Selection means attention. Being on Mondato signals your inventory cleared a bar." },
   { t: "Qualified inquiries", d: "Leads arrive pre-framed on price, size and intent — fewer calls, better ones." },
 ];
 
@@ -29,7 +29,7 @@ export default function ListPropertyPage() {
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-graphite">
               If you own or represent a property in Tricity and believe it deserves stronger
-              visibility, submit it to BookAPlot for review.
+              visibility, submit it to Mondato for review.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {WHAT.map((w) => <span key={w} className="chip">{w}</span>)}
@@ -41,7 +41,7 @@ export default function ListPropertyPage() {
       <section className="container-x grid gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
           <Reveal>
-            <h2 className="font-display text-2xl font-black">Why List With BookAPlot</h2>
+            <h2 className="font-display text-2xl font-black">Why List With Mondato</h2>
           </Reveal>
           <div className="mt-5 space-y-4">
             {WHY.map((w, i) => (

@@ -277,7 +277,7 @@ const TABS = [
   { id: "roi", label: "ROI / Appreciation", title: "ROI / Appreciation Calculator", purpose: "Estimate value growth over your holding period.", el: <Roi /> },
   { id: "yield", label: "Rental Yield", title: "Rental Yield Calculator", purpose: "Gross and net yield for commercial or built assets.", el: <Yield /> },
   { id: "buyrent", label: "Buy vs Rent", title: "Buy vs Rent Calculator", purpose: "A neutral comparison for residential decision-making.", el: <BuyRent /> },
-  { id: "plot", label: "Total Plot Investment", title: "Total Plot Investment Calculator", purpose: "All-in acquisition, development, and projected exit — the BookAPlot special.", el: <PlotTotal /> },
+  { id: "plot", label: "Total Plot Investment", title: "Total Plot Investment Calculator", purpose: "All-in acquisition, development, and projected exit — the Mondato special.", el: <PlotTotal /> },
 ];
 
 export default function Calculators() {

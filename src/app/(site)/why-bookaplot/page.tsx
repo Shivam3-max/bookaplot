@@ -4,9 +4,9 @@ import Reveal from "@/components/Reveal";
 import SectionHead from "@/components/SectionHead";
 
 export const metadata: Metadata = {
-  title: "Why BookAPlot — How We Think About Opportunities",
+  title: "Why Mondato — How We Think About Opportunities",
   description:
-    "The six-factor research method behind every deal on BookAPlot: pricing gaps, growth corridors, connectivity, maturity, end-use demand, and inventory quality.",
+    "The six-factor research method behind every deal on Mondato: pricing gaps, growth corridors, connectivity, maturity, end-use demand, and inventory quality.",
 };
 
 const FACTORS = [
@@ -29,7 +29,7 @@ export default function WhyPage() {
               We Don&apos;t Just Show Properties. We Highlight Opportunities Worth Evaluating.
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-graphite">
-              BookAPlot is built around the idea that some properties deserve more attention than
+              Mondato is built around the idea that some properties deserve more attention than
               others because of how they are priced, positioned, connected, or timed within the
               market.
             </p>
@@ -60,7 +60,7 @@ export default function WhyPage() {
             <div className="card mx-auto max-w-3xl border-l-4 p-8" style={{ borderLeftColor: "var(--gold)" }}>
               <p className="eyebrow">Important disclaimer</p>
               <p className="mt-3 leading-relaxed text-slate">
-                BookAPlot presents curated opportunities and market-oriented insights to help users
+                Mondato presents curated opportunities and market-oriented insights to help users
                 evaluate deals. Real estate decisions should always be based on independent due
                 diligence, financial suitability, and document verification before final commitment.
               </p>

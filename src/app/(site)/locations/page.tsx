@@ -21,7 +21,7 @@ export default function LocationsPage() {
               Explore Opportunities by Location
             </h1>
             <p className="mt-4 max-w-2xl text-graphite">
-              BookAPlot is built around Tricity and its growth corridors. Explore opportunities by
+              Mondato is built around Tricity and its growth corridors. Explore opportunities by
               city, demand pattern, affordability band, and development stage.
             </p>
           </Reveal>

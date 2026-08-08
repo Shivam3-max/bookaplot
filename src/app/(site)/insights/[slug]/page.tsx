@@ -30,7 +30,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </nav>
             <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl">{post.title}</h1>
             <p className="mt-4 text-xs font-bold text-graphite">
-              BookAPlot Research Desk · {new Date(post.date).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · {post.readMins} min read
+              Mondato Research Desk · {new Date(post.date).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · {post.readMins} min read
             </p>
           </Reveal>
         </div>

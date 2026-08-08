@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
   title: "About — Built for Smarter Real Estate Discovery in Tricity",
-  description: "Why BookAPlot exists: a curated, premium alternative to noisy property portals, built exclusively for Tricity.",
+  description: "Why Mondato exists: a curated, premium alternative to noisy property portals, built exclusively for Tricity.",
 };
 
 const VALUES = [
@@ -21,7 +21,7 @@ export default function AboutPage() {
       <section className="grid-bg border-b border-line py-16">
         <div className="container-x">
           <Reveal>
-            <p className="eyebrow">About BookAPlot</p>
+            <p className="eyebrow">About Mondato</p>
             <h1 className="mt-3 max-w-2xl text-3xl font-black leading-tight sm:text-5xl">
               Built for Smarter Real Estate Discovery in Tricity
             </h1>
@@ -30,11 +30,11 @@ export default function AboutPage() {
             <Reveal delay={100}>
               <div className="space-y-4 leading-relaxed text-slate">
                 <p>
-                  BookAPlot was created around a simple belief: in a market filled with noise, buyers
+                  Mondato was created around a simple belief: in a market filled with noise, buyers
                   deserve a more curated way to discover property opportunities.
                 </p>
                 <p>
-                  Instead of functioning like a generic listing board, BookAPlot focuses on presenting
+                  Instead of functioning like a generic listing board, Mondato focuses on presenting
                   selected opportunities across Tricity that may stand out for their price logic,
                   location value, growth context, or strategic fit.
                 </p>

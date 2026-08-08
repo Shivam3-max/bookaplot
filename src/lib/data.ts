@@ -744,7 +744,7 @@ export const POSTS: Post[] = [
     title: "What Makes a Property Actually Undervalued?",
     category: "Buying Process",
     excerpt:
-      "'Cheap' and 'undervalued' are not the same thing. The six signals we check before a deal earns the undervalued badge on BookAPlot.",
+      "'Cheap' and 'undervalued' are not the same thing. The six signals we check before a deal earns the undervalued badge on Mondato.",
     date: "2026-05-30",
     readMins: 7,
     body: [

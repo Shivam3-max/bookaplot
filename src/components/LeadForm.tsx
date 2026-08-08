@@ -69,7 +69,7 @@ export default function LeadForm({
           {cta}
         </button>
         <p className="mt-2 text-center text-[11px] text-graphite">
-          By submitting, you agree to be contacted by the BookAPlot team. No spam, ever.
+          By submitting, you agree to be contacted by the Mondato team. No spam, ever.
         </p>
       </div>
     </form>

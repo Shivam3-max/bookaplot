@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useNetwork } from "@/context/NetworkContext";
@@ -50,14 +51,11 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     <div className="flex min-h-screen bg-paper">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-slate text-white lg:flex">
         <div className="flex h-16 items-center gap-2.5 border-b border-white/10 px-5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1L14 5.5V14H2V5.5L8 1Z" stroke="var(--gold)" strokeWidth="1.6" />
-              <circle cx="8" cy="8.5" r="2" fill="var(--gold)" />
-            </svg>
+          <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white">
+            <Image src="/mondato-icon.jpg" alt="Mondato" width={64} height={64} className="h-full w-full object-cover" />
           </span>
           <div>
-            <p className="font-display text-sm font-black leading-none">BookAPlot</p>
+            <p className="font-display text-sm font-black leading-none">Mondato</p>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--gold)" }}>
               {account.role === "cp" ? "Partner Portal" : "Investor Portal"}
             </p>
@@ -94,7 +92,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
       <div className="flex-1 lg:pl-64">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-white/85 px-5 backdrop-blur-xl sm:px-8">
-          <span className="font-display text-sm font-black lg:hidden">BookAPlot Portal</span>
+          <span className="font-display text-sm font-black lg:hidden">Mondato Portal</span>
           <span className="hidden text-xs font-semibold text-graphite lg:block">
             Welcome back, {account.name.split(" ")[0]} — {account.role === "cp" ? "your territory is live." : "the desk is watching the market for you."}
           </span>

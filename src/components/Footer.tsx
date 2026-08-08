@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const COLS = [
   {
@@ -18,8 +19,8 @@ const COLS = [
       { href: "/join?as=cp", label: "Join as Channel Partner" },
       { href: "/join?as=investor", label: "Join as Investor" },
       { href: "/join?as=seller", label: "Sell / List Property" },
-      { href: "/about", label: "About BookAPlot" },
-      { href: "/why-bookaplot", label: "Why BookAPlot" },
+      { href: "/about", label: "About Mondato" },
+      { href: "/why-bookaplot", label: "Why Mondato" },
       { href: "/contact", label: "Contact" },
     ],
   },
@@ -39,14 +40,11 @@ export default function Footer() {
       <div className="container-x grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L14 5.5V14H2V5.5L8 1Z" stroke="var(--gold)" strokeWidth="1.6" />
-                <circle cx="8" cy="8.5" r="2" fill="var(--gold)" />
-              </svg>
+            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-white">
+              <Image src="/mondato-icon.jpg" alt="Mondato" width={64} height={64} className="h-full w-full object-cover" />
             </span>
             <span className="font-display text-lg font-black">
-              BookA<span style={{ color: "var(--gold)" }}>Plot</span>
+              MOND<span style={{ color: "var(--gold)" }}>ATO</span>
             </span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
@@ -55,7 +53,7 @@ export default function Footer() {
             Zirakpur, New Chandigarh and Kharar.
           </p>
           <div className="mt-5 space-y-1.5 text-sm text-white/70">
-            <p>+91 98XXX XXXXX &nbsp;·&nbsp; hello@bookaplot.com</p>
+            <p>+91 98XXX XXXXX &nbsp;·&nbsp; hello@mondato.com</p>
             <p>Sector 82, Mohali, Punjab</p>
           </div>
           <a
@@ -83,9 +81,9 @@ export default function Footer() {
       </div>
       <div className="border-t border-white/10 py-6">
         <div className="container-x flex flex-col gap-3 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} BookAPlot.com — Premium Tricity real estate discovery.</p>
+          <p>© {new Date().getFullYear()} Mondato.com — Premium Tricity real estate discovery.</p>
           <p className="max-w-xl leading-relaxed">
-            BookAPlot presents curated opportunities and informational tools. Verify all details and
+            Mondato presents curated opportunities and informational tools. Verify all details and
             documents independently before any purchase decision.
           </p>
         </div>

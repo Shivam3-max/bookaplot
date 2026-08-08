@@ -131,7 +131,7 @@ export default function Home() {
           </div>
           <Reveal delay={200}>
             <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-graphite">
-              From plotted developments to high-potential growth pockets, BookAPlot helps serious
+              From plotted developments to high-potential growth pockets, Mondato helps serious
               buyers navigate Tricity&apos;s most promising opportunities with more clarity and less noise.
             </p>
           </Reveal>
@@ -201,7 +201,7 @@ export default function Home() {
           <Reveal>
             <span className="chip badge-gold">
               <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-gold" />
-              Signature feature — only on BookAPlot
+              Signature feature — only on Mondato
             </span>
             <h2 className="mt-4 text-3xl font-black leading-tight sm:text-4xl">
               Give &amp; Ask: You State the Requirement. <span style={{ color: "var(--gold)" }}>We Revert with the Deal.</span>
@@ -270,7 +270,7 @@ export default function Home() {
               Built for Buyers Who Want Better Deals, Not More Noise
             </h2>
             <p className="mt-5 leading-relaxed text-white/70">
-              Most property websites show everything. BookAPlot is built to show what&apos;s worth
+              Most property websites show everything. Mondato is built to show what&apos;s worth
               attention. We focus on opportunities that may be attractive because of:
             </p>
             <ul className="mt-5 space-y-2.5">
@@ -308,7 +308,7 @@ export default function Home() {
       {/* 5 — HOW IT WORKS */}
       <section className="py-16">
         <div className="container-x">
-          <SectionHead eyebrow="The journey" title="How BookAPlot Works" />
+          <SectionHead eyebrow="The journey" title="How Mondato Works" />
           <div className="mt-10 grid gap-5 md:grid-cols-4">
             {STEPS.map((s, i) => (
               <Reveal key={s.t} delay={i * 100}>

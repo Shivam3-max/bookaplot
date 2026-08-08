@@ -3,14 +3,14 @@ import Reveal from "@/components/Reveal";
 import LeadForm from "@/components/LeadForm";
 
 export const metadata: Metadata = {
-  title: "Contact — Talk to the BookAPlot Team",
+  title: "Contact — Talk to the Mondato Team",
   description: "Book a consultation, schedule a site visit, or get help shortlisting Tricity opportunities.",
 };
 
 const CHANNELS = [
   { t: "Phone", v: "+91 98XXX XXXXX", d: "Mon–Sat, 9:30 AM – 7 PM IST" },
   { t: "WhatsApp", v: "Chat with the team", d: "Fastest for deal-specific questions" },
-  { t: "Email", v: "hello@bookaplot.com", d: "Replies within one working day" },
+  { t: "Email", v: "hello@mondato.com", d: "Replies within one working day" },
   { t: "Office", v: "Sector 82, Mohali, Punjab", d: "Visits by appointment" },
 ];
 
@@ -22,7 +22,7 @@ export default function ContactPage() {
           <Reveal>
             <p className="eyebrow">Contact / consultation</p>
             <h1 className="mt-3 max-w-2xl text-3xl font-black leading-tight sm:text-5xl">
-              Talk to the BookAPlot Team
+              Talk to the Mondato Team
             </h1>
             <p className="mt-4 max-w-xl text-graphite">
               Looking for the right opportunity, want to schedule a site visit, or need help

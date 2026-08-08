@@ -8,8 +8,8 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "BookAPlot — Tricity's CP & Investor-First Real Estate Network",
-    template: "%s | BookAPlot",
+    default: "Mondato — Tricity's CP & Investor-First Real Estate Network",
+    template: "%s | Mondato",
   },
   description:
     "Exclusive verified mandates, territory rights and the Give & Ask desk — Tricity's channel-partner and investor network across Chandigarh, Mohali, Panchkula, Zirakpur, New Chandigarh and Kharar.",

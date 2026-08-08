@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSaved } from "@/context/SavedContext";
@@ -11,7 +12,7 @@ const NAV = [
   { href: "/locations", label: "Locations" },
   { href: "/map", label: "Tricity Map" },
   { href: "/calculators", label: "Calculators" },
-  { href: "/why-bookaplot", label: "Why BookAPlot" },
+  { href: "/why-bookaplot", label: "Why Mondato" },
   { href: "/nri", label: "NRI" },
   { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
@@ -40,16 +41,15 @@ export default function Header() {
       }`}
     >
       <div className="container-x flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-ink">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1L14 5.5V14H2V5.5L8 1Z" stroke="var(--gold)" strokeWidth="1.6" />
-              <circle cx="8" cy="8.5" r="2" fill="var(--gold)" />
-            </svg>
-          </span>
-          <span className="font-display text-lg font-black tracking-tight">
-            BookA<span style={{ color: "var(--gold)" }}>Plot</span>
-          </span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/mondato-logo.png"
+            alt="Mondato — Invest Beyond Ordinary"
+            width={520}
+            height={200}
+            priority
+            className="h-9 w-auto sm:h-10"
+          />
         </Link>
 
         <nav className="hidden items-center gap-5 lg:flex">

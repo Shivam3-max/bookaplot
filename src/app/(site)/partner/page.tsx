@@ -23,7 +23,7 @@ export default function PartnerPage() {
               A Premium Discovery Channel for Selected Inventory
             </h1>
             <p className="mt-5 max-w-xl leading-relaxed text-graphite">
-              BookAPlot puts curated inventory in front of serious, high-intent Tricity buyers.
+              Mondato puts curated inventory in front of serious, high-intent Tricity buyers.
               If your stock has genuine price logic or location value, we present it the way it
               deserves — benchmarked, explained, premium.
             </p>

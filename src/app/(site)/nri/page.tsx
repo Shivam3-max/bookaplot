@@ -31,7 +31,7 @@ export default function NriPage() {
               Explore Tricity Real Estate with More Confidence, Even from Abroad
             </h1>
             <p className="mt-5 max-w-xl leading-relaxed text-graphite">
-              For NRIs, distance often makes property buying harder than it should be. BookAPlot
+              For NRIs, distance often makes property buying harder than it should be. Mondato
               simplifies early discovery with curated opportunities, cleaner comparison, structured
               deal presentation, and consultation support across time zones.
             </p>
@@ -67,7 +67,7 @@ export default function NriPage() {
       </section>
 
       <section className="container-x py-16">
-        <SectionHead eyebrow="Built for distance" title="How BookAPlot Works for NRIs" />
+        <SectionHead eyebrow="Built for distance" title="How Mondato Works for NRIs" />
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {NRI_POINTS.map((p, i) => (
             <Reveal key={p.t} delay={i * 80}>
