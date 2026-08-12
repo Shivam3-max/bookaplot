@@ -11,6 +11,19 @@ export interface FormState {
   fieldErrors?: Record<string, string[]>;
 }
 
+function getFormValue(formData: FormData, key: string) {
+  const direct = formData.get(key);
+  if (direct !== null) return direct;
+
+  for (const [entryKey, value] of formData.entries()) {
+    if (entryKey === key || entryKey.endsWith(`_${key}`)) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
 const passwordSchema = z
   .string()
   .min(8, "Password must be at least 8 characters.")
@@ -70,11 +83,11 @@ async function createAccount(
 
 export async function registerCp(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
   const parsed = cpSchema.safeParse({
-    name: formData.get("name"),
-    phone: formData.get("phone"),
-    firm: formData.get("firm"),
-    territory: formData.get("territory"),
-    password: formData.get("password"),
+    name: getFormValue(formData, "name"),
+    phone: getFormValue(formData, "phone"),
+    firm: getFormValue(formData, "firm"),
+    territory: getFormValue(formData, "territory"),
+    password: getFormValue(formData, "password"),
   });
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   return createAccount({ ...parsed.data }, "CP");
@@ -82,11 +95,11 @@ export async function registerCp(_prevState: FormState | undefined, formData: Fo
 
 export async function registerInvestor(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
   const parsed = investorSchema.safeParse({
-    name: formData.get("name"),
-    phone: formData.get("phone"),
-    budget: formData.get("budget"),
-    interest: formData.get("interest"),
-    password: formData.get("password"),
+    name: getFormValue(formData, "name"),
+    phone: getFormValue(formData, "phone"),
+    budget: getFormValue(formData, "budget"),
+    interest: getFormValue(formData, "interest"),
+    password: getFormValue(formData, "password"),
   });
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   return createAccount({ ...parsed.data }, "INVESTOR");
@@ -94,8 +107,8 @@ export async function registerInvestor(_prevState: FormState | undefined, formDa
 
 export async function login(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
   const parsed = loginSchema.safeParse({
-    phone: formData.get("phone"),
-    password: formData.get("password"),
+    phone: getFormValue(formData, "phone"),
+    password: getFormValue(formData, "password"),
   });
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
 
