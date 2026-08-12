@@ -1,25 +1,21 @@
 import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { getDatabaseConfig } from "@/lib/database-config";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createClient() {
-  const databaseUrl = process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL is required to initialize Prisma.");
-  }
-
-  const url = new URL(databaseUrl);
+  const config = getDatabaseConfig();
   const adapter = new PrismaMariaDb({
-    host: url.hostname === "127.0.0.1" ? "localhost" : url.hostname,
-    port: url.port ? Number(url.port) : 3306,
-    user: decodeURIComponent(url.username),
-    password: decodeURIComponent(url.password),
-    database: url.pathname.replace(/^\//, ""),
+    host: config.host,
+    port: config.port,
+    user: config.user,
+    password: config.password,
+    database: config.database,
     connectionLimit: 5,
     acquireTimeout: 10000,
+    connectTimeout: 5000,
   });
 
   return new PrismaClient({ adapter });
