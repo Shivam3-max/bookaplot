@@ -7,7 +7,7 @@ export interface DatabaseConfig {
 }
 
 function normalizeHost(host: string) {
-  return host === "127.0.0.1" ? "localhost" : host;
+  return host === "localhost" ? "127.0.0.1" : host;
 }
 
 export function getDatabaseConfig(): DatabaseConfig {
