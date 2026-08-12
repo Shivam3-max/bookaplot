@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  CP
+  INVESTOR
+  ADMIN
+}
+
+enum PartnerStatus {
+  PENDING
+  VERIFIED
+  TERRITORY_LOCKED
+}
+
+enum AskStatus {
+  OPEN
+  PLATFORM_REVERTED
+  MATCHED
+}
+
+enum SubmissionStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  role         Role
+  name         String
+  phone        String        @unique
+  email        String?       @unique
+  passwordHash String
+  firm         String?
+  territory    String?
+  budget       String?
+  interest     String?
+  status       PartnerStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+
+  asks             Ask[]             @relation("InvestorAsks")
+  askReplies       AskReply[]
+  creativeRequests CreativeRequest[]
+
+  @@map("users")
+}
+
+model Ask {
+  id         String     @id @default(cuid())
+  investor   User       @relation("InvestorAsks", fields: [investorId], references: [id], onDelete: Cascade)
+  investorId String
+  budget     String
+  type       String
+  locations  String
+  urgency    String
+  note       String     @db.Text
+  status     AskStatus  @default(OPEN)
+  createdAt  DateTime   @default(now())
+  replies    AskReply[]
+
+  @@index([investorId])
+  @@map("asks")
+}
+
+model AskReply {
+  id        String   @id @default(cuid())
+  ask       Ask      @relation(fields: [askId], references: [id], onDelete: Cascade)
+  askId     String
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId  String?
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([askId])
+  @@map("ask_replies")
+}
+
+model CreativeRequest {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("creative_requests")
+}
+
+model SellerSubmission {
+  id             String           @id @default(cuid())
+  name           String
+  phone          String
+  propertyDetail String
+  expectedPrice  String?
+  status         SubmissionStatus @default(PENDING_REVIEW)
+  createdAt      DateTime         @default(now())
+
+  @@map("seller_submissions")
+}

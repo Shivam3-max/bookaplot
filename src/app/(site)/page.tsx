@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { DEALS, LOCATIONS, STATS, TESTIMONIALS } from "@/lib/data";
 import DealCard from "@/components/DealCard";
 import TricityMap from "@/components/TricityMap";
@@ -50,6 +51,14 @@ export default function Home() {
       <section className="grid-bg relative overflow-hidden">
         <div className="pointer-events-none absolute -right-40 -top-40 h-[480px] w-[480px] rounded-full bg-gold-soft blur-3xl" />
         <div className="pointer-events-none absolute -left-40 top-64 h-[380px] w-[380px] rounded-full bg-green-soft blur-3xl" />
+        <Image
+          src="/mondato-mark.png"
+          alt=""
+          aria-hidden
+          width={512}
+          height={512}
+          className="pointer-events-none absolute -right-16 bottom-0 hidden h-[340px] w-[340px] -rotate-6 opacity-[0.06] lg:block"
+        />
         <div className="container-x relative grid items-center gap-10 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
           <div>
             <Reveal>
@@ -196,8 +205,16 @@ export default function Home() {
       </section>
 
       {/* 2c — GIVE & ASK HIGHLIGHT */}
-      <section className="border-y border-line bg-ink py-16 text-white">
-        <div className="container-x grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
+      <section className="relative overflow-hidden border-y border-line bg-ink py-16 text-white">
+        <Image
+          src="/mondato-mark.png"
+          alt=""
+          aria-hidden
+          width={512}
+          height={512}
+          className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rotate-12 opacity-[0.07]"
+        />
+        <div className="container-x relative grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <Reveal>
             <span className="chip badge-gold">
               <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-gold" />
@@ -486,6 +503,14 @@ export default function Home() {
             <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 text-center text-white sm:px-12">
               <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-gold opacity-20 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-green opacity-25 blur-3xl" />
+              <Image
+                src="/mondato-mark.png"
+                alt=""
+                aria-hidden
+                width={512}
+                height={512}
+                className="pointer-events-none absolute -bottom-14 -right-10 h-64 w-64 rotate-6 opacity-[0.09]"
+              />
               <p className="eyebrow">Ready when you are</p>
               <h2 className="mx-auto mt-3 max-w-xl text-3xl font-black sm:text-4xl">
                 The Network Is the Product

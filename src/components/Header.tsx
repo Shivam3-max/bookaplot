@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSaved } from "@/context/SavedContext";
-import { useNetwork } from "@/context/NetworkContext";
+import { useCurrentUser } from "@/context/SessionContext";
 
 const NAV = [
   { href: "/deals", label: "Deals" },
@@ -21,9 +21,11 @@ const NAV = [
 export default function Header() {
   const pathname = usePathname();
   const { saved } = useSaved();
-  const { account } = useNetwork();
+  const user = useCurrentUser();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const dashboardHref = user?.role === "ADMIN" ? "/admin" : "/portal";
+  const dashboardLabel = user?.role === "CP" ? "CP" : user?.role === "ADMIN" ? "Admin" : "Investor";
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 12);
@@ -45,10 +47,10 @@ export default function Header() {
           <Image
             src="/mondato-logo.png"
             alt="Mondato — Invest Beyond Ordinary"
-            width={520}
-            height={200}
+            width={1476}
+            height={527}
             priority
-            className="h-9 w-auto sm:h-10"
+            className="h-14 w-auto sm:h-16"
           />
         </Link>
 
@@ -75,14 +77,19 @@ export default function Header() {
               </span>
             )}
           </Link>
-          {account ? (
-            <Link href="/portal" className="btn-primary !px-4 !py-2 !text-[13px]">
-              {account.role === "cp" ? "CP Dashboard" : "Investor Dashboard"}
+          {user ? (
+            <Link href={dashboardHref} className="btn-primary !px-4 !py-2 !text-[13px]">
+              {dashboardLabel} Dashboard
             </Link>
           ) : (
-            <Link href="/join" className="btn-gold !px-4 !py-2 !text-[13px]">
-              Join Network
-            </Link>
+            <>
+              <Link href="/login" className="text-[13.5px] font-semibold text-graphite hover:text-ink">
+                Sign in
+              </Link>
+              <Link href="/join" className="btn-gold !px-4 !py-2 !text-[13px]">
+                Join Network
+              </Link>
+            </>
           )}
         </div>
 
@@ -105,14 +112,19 @@ export default function Header() {
                 {n.label}
               </Link>
             ))}
-            {account ? (
-              <Link href="/portal" className="btn-primary mt-2 justify-center">
-                Open {account.role === "cp" ? "CP" : "Investor"} Dashboard
+            {user ? (
+              <Link href={dashboardHref} className="btn-primary mt-2 justify-center">
+                Open {dashboardLabel} Dashboard
               </Link>
             ) : (
-              <Link href="/join" className="btn-gold mt-2 justify-center">
-                Join Network
-              </Link>
+              <>
+                <Link href="/login" className="rounded-lg px-3 py-2.5 text-sm font-semibold text-slate hover:bg-paper">
+                  Sign in
+                </Link>
+                <Link href="/join" className="btn-gold mt-2 justify-center">
+                  Join Network
+                </Link>
+              </>
             )}
           </nav>
         </div>

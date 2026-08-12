@@ -1,10 +1,9 @@
-"use client";
-
 import Link from "next/link";
+import { requireAdmin } from "@/lib/dal";
+import { prisma } from "@/lib/prisma";
 import { DEALS } from "@/lib/data";
 import { LEADS, VISITS, SUBMISSIONS, NOTIFICATIONS } from "@/lib/admin-data";
 import { MANDATES } from "@/lib/network-data";
-import { useNetwork } from "@/context/NetworkContext";
 import { inr } from "@/lib/format";
 
 const FUNNEL = [
@@ -15,17 +14,21 @@ const FUNNEL = [
   { stage: "Closed won", n: 96 },
 ];
 
-export default function AdminDashboard() {
-  const { partners, asks } = useNetwork();
+export default async function AdminDashboard() {
+  await requireAdmin();
+
+  const [cps, investors, pendingPartners, openAsks] = await Promise.all([
+    prisma.user.count({ where: { role: "CP" } }),
+    prisma.user.count({ where: { role: "INVESTOR" } }),
+    prisma.user.count({ where: { role: { in: ["CP", "INVESTOR"] }, status: "PENDING" } }),
+    prisma.ask.count({ where: { status: "OPEN" } }),
+  ]);
+
   const liveDeals = DEALS.length;
   const mandateCount = DEALS.filter((d) => MANDATES[d.slug]).length;
   const newLeads = LEADS.filter((l) => l.stage === "New").length;
   const pendingSubs = SUBMISSIONS.filter((s) => s.status === "Pending Review").length;
   const upcomingVisits = VISITS.filter((v) => ["Requested", "Confirmed"].includes(v.status)).length;
-  const pendingPartners = partners.filter((p) => p.status === "Pending").length;
-  const openAsks = asks.filter((a) => a.status === "Open").length;
-  const cps = partners.filter((p) => p.role === "cp").length;
-  const investors = partners.filter((p) => p.role === "investor").length;
 
   const widgets = [
     { label: "Mandates live", value: mandateCount, href: "/admin/deals", tone: "var(--green)" },

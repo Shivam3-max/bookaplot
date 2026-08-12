@@ -36,12 +36,20 @@ const COLS = [
 
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t border-line bg-slate text-white">
-      <div className="container-x grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+    <footer className="relative mt-24 overflow-hidden border-t border-line bg-slate text-white">
+      <Image
+        src="/mondato-mark.png"
+        alt=""
+        aria-hidden
+        width={512}
+        height={512}
+        className="pointer-events-none absolute -bottom-16 -right-16 h-72 w-72 rotate-6 opacity-[0.07] sm:h-96 sm:w-96"
+      />
+      <div className="container-x relative grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-white">
-              <Image src="/mondato-icon.jpg" alt="Mondato" width={64} height={64} className="h-full w-full object-cover" />
+            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg">
+              <Image src="/mondato-mark.png" alt="Mondato" width={512} height={512} className="h-full w-full object-contain" />
             </span>
             <span className="font-display text-lg font-black">
               MOND<span style={{ color: "var(--gold)" }}>ATO</span>
@@ -79,7 +87,7 @@ export default function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-t border-white/10 py-6">
+      <div className="relative border-t border-white/10 py-6">
         <div className="container-x flex flex-col gap-3 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Mondato.com — Premium Tricity real estate discovery.</p>
           <p className="max-w-xl leading-relaxed">

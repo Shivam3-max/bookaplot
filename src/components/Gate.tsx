@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ReactNode } from "react";
-import { useNetwork } from "@/context/NetworkContext";
+import { useCurrentUser } from "@/context/SessionContext";
 
 /** Blurs children for the public; network members (CP / investor) see through. */
 export default function Gate({
@@ -14,8 +14,8 @@ export default function Gate({
   label?: string;
   compact?: boolean;
 }) {
-  const { account } = useNetwork();
-  if (account) return <>{children}</>;
+  const user = useCurrentUser();
+  if (user) return <>{children}</>;
 
   return (
     <div className="relative overflow-hidden rounded-2xl">

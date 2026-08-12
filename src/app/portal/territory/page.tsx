@@ -1,6 +1,6 @@
 "use client";
 
-import { useNetwork } from "@/context/NetworkContext";
+import { useCurrentUser } from "@/context/SessionContext";
 import { TERRITORIES } from "@/lib/network-data";
 import { LEADS } from "@/lib/admin-data";
 import { DEALS } from "@/lib/data";
@@ -8,9 +8,9 @@ import TricityMap from "@/components/TricityMap";
 import Link from "next/link";
 
 export default function TerritoryPage() {
-  const { account } = useNetwork();
+  const account = useCurrentUser();
   if (!account) return null;
-  if (account.role !== "cp")
+  if (account.role !== "CP")
     return (
       <div className="card p-10 text-center">
         <p className="font-display font-bold">Territory rights are a Channel Partner feature.</p>
@@ -19,6 +19,7 @@ export default function TerritoryPage() {
     );
 
   const mine = account.territory || "Territory pending verification";
+  const isLocked = account.status === "TERRITORY_LOCKED";
   const activeLeads = LEADS.filter((l) => !["Closed Won", "Closed Lost"].includes(l.stage)).slice(0, 4);
 
   return (
@@ -34,8 +35,13 @@ export default function TerritoryPage() {
         </div>
         <div className="space-y-4">
           <div className="card border-l-4 p-5" style={{ borderLeftColor: "var(--gold)" }}>
-            <p className="eyebrow">Locked to you</p>
+            <p className="eyebrow">{isLocked ? "Locked to you" : "Preferred — pending verification"}</p>
             <p className="mt-1 font-display text-2xl font-black">{mine}</p>
+            {!isLocked && (
+              <p className="mt-1 text-xs text-graphite">
+                This territory isn&apos;t locked yet — the network team verifies new partners before exclusivity applies.
+              </p>
+            )}
             <ul className="mt-3 space-y-2 text-sm">
               {[
                 "All mandates inside this zone route to you first",

@@ -1,25 +1,28 @@
-"use client";
-
 import Link from "next/link";
-import { useNetwork } from "@/context/NetworkContext";
+import { requirePartner } from "@/lib/dal";
+import { prisma } from "@/lib/prisma";
 import { DEALS } from "@/lib/data";
 import { MANDATES } from "@/lib/network-data";
 import { LEADS } from "@/lib/admin-data";
 import { inr } from "@/lib/format";
 
-export default function PortalOverview() {
-  const { account, asks } = useNetwork();
-  if (!account) return null;
-  const isCp = account.role === "cp";
+export default async function PortalOverview() {
+  const account = await requirePartner();
+  const isCp = account.role === "CP";
+
+  const asks = await prisma.ask.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { investor: { select: { name: true } } },
+  });
+
   const mandates = DEALS.filter((d) => MANDATES[d.slug]);
   const urgent = mandates.filter((d) => MANDATES[d.slug].urgent);
-  const myAsks = asks.filter((a) => a.investor.startsWith("You"));
-  const openAsks = asks.filter((a) => a.status === "Open").length;
+  const myAsks = asks.filter((a) => a.investorId === account.id);
 
   const kpis = isCp
     ? [
         { label: "Live mandates", value: String(mandates.length), href: "/portal/deals", tone: "var(--green)" },
-        { label: "Your territory", value: account.territory ? "Locked" : "Pending", href: "/portal/territory", tone: "var(--gold)" },
+        { label: "Your territory", value: account.status === "TERRITORY_LOCKED" ? "Locked" : account.territory ? "Pending lock" : "Pending", href: "/portal/territory", tone: "var(--gold)" },
         { label: "Territory leads", value: String(LEADS.filter((l) => !["Closed Won", "Closed Lost"].includes(l.stage)).length), href: "/portal/leads", tone: "var(--steel)" },
         { label: "Investor asks", value: String(asks.length), href: "/portal/asks", tone: "var(--red)" },
       ]
@@ -52,12 +55,16 @@ export default function PortalOverview() {
         ))}
       </div>
 
-      {isCp && !account.territory ? null : isCp && (
+      {isCp && account.territory && (
         <div className="card flex flex-wrap items-center justify-between gap-4 border-l-4 p-5" style={{ borderLeftColor: "var(--gold)" }}>
           <div>
-            <p className="eyebrow">Exclusive territory</p>
+            <p className="eyebrow">{account.status === "TERRITORY_LOCKED" ? "Exclusive territory" : "Preferred territory"}</p>
             <p className="mt-1 font-display text-lg font-black">{account.territory}</p>
-            <p className="text-xs text-graphite">One CP per territory — mandates and leads in this zone route to you alone.</p>
+            <p className="text-xs text-graphite">
+              {account.status === "TERRITORY_LOCKED"
+                ? "One CP per territory — mandates and leads in this zone route to you alone."
+                : "Locks exclusively to you once the network team verifies your account."}
+            </p>
           </div>
           <Link href="/portal/territory" className="btn-primary !py-2.5">View Territory →</Link>
         </div>
@@ -108,7 +115,7 @@ export default function PortalOverview() {
                       <p className="text-sm font-bold">{a.type}</p>
                       <span className="chip !text-[10px]">{a.budget}</span>
                     </div>
-                    <p className="mt-0.5 text-xs text-graphite">{a.investor} · {a.locations}</p>
+                    <p className="mt-0.5 text-xs text-graphite">{a.investor.name} · {a.locations}</p>
                   </div>
                 ))
               : urgent.map((d) => (

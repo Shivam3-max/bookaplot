@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useNetwork } from "@/context/NetworkContext";
+import { useCurrentUser } from "@/context/SessionContext";
 import { LEADS, Lead, LeadStage } from "@/lib/admin-data";
 
 const STAGES: LeadStage[] = ["New", "Contacted", "Follow-up", "Visit Scheduled", "Hot", "Negotiation", "Closed Won", "Closed Lost"];
 
 export default function TerritoryLeads() {
-  const { account } = useNetwork();
+  const account = useCurrentUser();
   const [leads, setLeads] = useState<Lead[]>(LEADS.map((l) => ({ ...l, assignee: "You" })));
   if (!account) return null;
-  if (account.role !== "cp")
+  if (account.role !== "CP")
     return (
       <div className="card p-10 text-center">
         <p className="font-display font-bold">Territory leads are a Channel Partner feature.</p>

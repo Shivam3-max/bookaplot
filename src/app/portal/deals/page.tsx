@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useNetwork } from "@/context/NetworkContext";
+import { useCurrentUser } from "@/context/SessionContext";
 import { DEALS } from "@/lib/data";
 import { MANDATES } from "@/lib/network-data";
 import { inr, inrFull, pctBelow } from "@/lib/format";
@@ -10,10 +10,10 @@ import DealVisual from "@/components/DealVisual";
 import ScoreRing from "@/components/ScoreRing";
 
 export default function PortalDeals() {
-  const { account } = useNetwork();
+  const account = useCurrentUser();
   const [filter, setFilter] = useState<"all" | "urgent" | "exclusive">("all");
   if (!account) return null;
-  const isCp = account.role === "cp";
+  const isCp = account.role === "CP";
 
   let list = DEALS.filter((d) => MANDATES[d.slug]);
   if (filter === "urgent") list = list.filter((d) => MANDATES[d.slug].urgent);

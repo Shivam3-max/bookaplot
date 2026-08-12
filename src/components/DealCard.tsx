@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Deal } from "@/lib/types";
 import { inr, inrFull, pctBelow } from "@/lib/format";
 import { useSaved } from "@/context/SavedContext";
-import { useNetwork } from "@/context/NetworkContext";
+import { useCurrentUser } from "@/context/SessionContext";
 import ScoreRing from "./ScoreRing";
 import DealVisual from "./DealVisual";
 
@@ -17,11 +17,11 @@ const badgeClass = (b: string) =>
 
 export default function DealCard({ deal }: { deal: Deal }) {
   const { saved, compare, toggleSaved, toggleCompare } = useSaved();
-  const { account } = useNetwork();
+  const user = useCurrentUser();
   const isSaved = saved.includes(deal.slug);
   const inCompare = compare.includes(deal.slug);
   const below = pctBelow(deal.pricePerUnit, deal.benchmarkPerUnit);
-  const unlocked = !!account;
+  const unlocked = !!user;
 
   return (
     <article className="card card-hover group relative flex flex-col overflow-hidden">

@@ -1,0 +1,92 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { logout } from "@/app/actions/auth";
+import type { CurrentUser } from "@/lib/dal";
+
+const NAV = [
+  { href: "/admin", label: "Dashboard", icon: "◧" },
+  { href: "/admin/partners", label: "CPs & Investors", icon: "◈" },
+  { href: "/admin/asks", label: "Give & Ask Desk", icon: "⇄" },
+  { href: "/admin/deals", label: "Deals & Mandates", icon: "▦" },
+  { href: "/admin/leads", label: "Leads / CRM", icon: "☏" },
+  { href: "/admin/visits", label: "Site Visits", icon: "⚑" },
+  { href: "/admin/submissions", label: "Submissions", icon: "⇪" },
+  { href: "/admin/blog", label: "Blog / CMS", icon: "✎" },
+  { href: "/admin/analytics", label: "Analytics", icon: "◔" },
+  { href: "/admin/settings", label: "Team & SEO", icon: "⚙" },
+];
+
+export default function AdminShell({ user, children }: { user: CurrentUser; children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  return (
+    <div className="flex min-h-screen bg-paper">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col bg-slate text-white lg:flex">
+        <div className="flex h-16 items-center gap-2.5 border-b border-white/10 px-5">
+          <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg">
+            <Image src="/mondato-mark.png" alt="Mondato" width={512} height={512} className="h-full w-full object-contain" />
+          </span>
+          <div>
+            <p className="font-display text-sm font-black leading-none">Mondato</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Admin</p>
+          </div>
+        </div>
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+          {NAV.map((n) => {
+            const active = n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href);
+            return (
+              <Link
+                key={n.href}
+                href={n.href}
+                className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold transition-colors ${
+                  active ? "bg-white/10 text-white" : "text-white/55 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <span className="w-4 text-center" style={active ? { color: "var(--gold)" } : undefined}>{n.icon}</span>
+                {n.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="space-y-2 border-t border-white/10 p-4">
+          <p className="truncate text-xs font-bold text-white/70">{user.name}</p>
+          <div className="flex gap-3 pt-1 text-xs font-bold">
+            <Link href="/" className="text-white/50 hover:text-white">← Back to website</Link>
+            <form action={logout}>
+              <button type="submit" className="text-white/50 hover:text-white">Sign out</button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <div className="flex-1 lg:pl-60">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-white/85 px-5 backdrop-blur-xl sm:px-8">
+          <div className="flex items-center gap-3 lg:hidden">
+            <span className="font-display text-sm font-black">Mondato Admin</span>
+          </div>
+          <div className="hidden text-xs font-semibold text-graphite lg:block">
+            {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="chip badge-green !text-[11px]">● All systems live</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink font-display text-sm font-black text-white">
+              {user.name[0]?.toUpperCase()}
+            </span>
+          </div>
+        </header>
+        {/* mobile nav */}
+        <nav className="flex gap-1 overflow-x-auto border-b border-line bg-white px-4 py-2 lg:hidden">
+          {NAV.map((n) => (
+            <Link key={n.href} href={n.href} className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold ${pathname === n.href ? "bg-ink text-white" : "text-graphite"}`}>
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+        <main className="p-5 sm:p-8">{children}</main>
+      </div>
+    </div>
+  );
+}
