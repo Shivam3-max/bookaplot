@@ -7,8 +7,8 @@ const secretKey = process.env.SESSION_SECRET;
 if (!secretKey) throw new Error("SESSION_SECRET is not set");
 const encodedKey = new TextEncoder().encode(secretKey);
 
-const COOKIE_NAME = "mondato_session";
-const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+export const COOKIE_NAME = "mondato_session";
+export const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 
 export interface SessionPayload {
   userId: string;
@@ -25,6 +25,16 @@ export async function encrypt(payload: SessionPayload) {
     .sign(encodedKey);
 }
 
+export function getSessionCookieOptions(expiresAt: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    expires: new Date(expiresAt),
+    path: "/",
+  };
+}
+
 export async function decrypt(token: string | undefined): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
@@ -39,13 +49,7 @@ export async function createSession(userId: string, role: Role) {
   const expiresAt = Date.now() + SESSION_DURATION_MS;
   const token = await encrypt({ userId, role, expiresAt });
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    expires: new Date(expiresAt),
-    path: "/",
-  });
+  cookieStore.set(COOKIE_NAME, token, getSessionCookieOptions(expiresAt));
 }
 
 export async function deleteSession() {

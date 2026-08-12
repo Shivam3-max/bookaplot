@@ -1,12 +1,36 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import { login } from "@/app/actions/auth";
+import type { FormState } from "@/lib/auth-service";
 
 export default function LoginForm() {
-  const [state, action, pending] = useActionState(login, undefined);
+  const router = useRouter();
+  const [state, setState] = useState<FormState | undefined>(undefined);
+  const [pending, setPending] = useState(false);
+
+  async function handleSubmit(formData: FormData) {
+    setPending(true);
+    setState(undefined);
+
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      body: formData,
+    });
+
+    const payload = (await response.json()) as FormState & { redirectTo?: string };
+
+    if (!response.ok) {
+      setState(payload);
+      setPending(false);
+      return;
+    }
+
+    router.push(payload.redirectTo ?? "/portal");
+    router.refresh();
+  }
 
   return (
     <>
@@ -26,7 +50,12 @@ export default function LoginForm() {
 
       <section className="container-x max-w-md py-10">
         <div className="card p-6 sm:p-8">
-          <form action={action} className="grid gap-4">
+          <form
+            action={async (formData) => {
+              await handleSubmit(formData);
+            }}
+            className="grid gap-4"
+          >
             <div>
               <label className="label">Phone *</label>
               <input name="phone" required type="tel" className="input" placeholder="+91" />

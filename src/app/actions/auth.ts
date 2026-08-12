@@ -1,125 +1,38 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import bcrypt from "bcryptjs";
-import * as z from "zod";
-import { prisma } from "@/lib/prisma";
 import { createSession, deleteSession } from "@/lib/session";
+import {
+  type FormState,
+  loginFromFormData,
+  registerCpFromFormData,
+  registerInvestorFromFormData,
+} from "@/lib/auth-service";
 
-export interface FormState {
-  error?: string;
-  fieldErrors?: Record<string, string[]>;
-}
+export type { FormState } from "@/lib/auth-service";
 
-function getFormValue(formData: FormData, key: string) {
-  const direct = formData.get(key);
-  if (direct !== null) return direct;
+export async function registerCp(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
+  const result = await registerCpFromFormData(formData);
+  if (!result.ok) return result.state;
 
-  for (const [entryKey, value] of formData.entries()) {
-    if (entryKey === key || entryKey.endsWith(`_${key}`)) {
-      return value;
-    }
-  }
-
-  return null;
-}
-
-const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters.")
-  .regex(/[a-zA-Z]/, "Password must contain a letter.")
-  .regex(/[0-9]/, "Password must contain a number.");
-
-const phoneSchema = z.string().trim().min(6, "Enter a valid phone number.");
-
-const cpSchema = z.object({
-  name: z.string().trim().min(2, "Enter your name."),
-  phone: phoneSchema,
-  firm: z.string().trim().optional(),
-  territory: z.string().trim().min(1, "Select a territory."),
-  password: passwordSchema,
-});
-
-const investorSchema = z.object({
-  name: z.string().trim().min(2, "Enter your name."),
-  phone: phoneSchema,
-  budget: z.string().trim().min(1, "Select a budget band."),
-  interest: z.string().trim().optional().nullable(),
-  password: passwordSchema,
-});
-
-const loginSchema = z.object({
-  phone: phoneSchema,
-  password: z.string().min(1, "Enter your password."),
-});
-
-async function createAccount(
-  data: { name: string; phone: string; password: string; firm?: string; territory?: string; budget?: string; interest?: string | null },
-  role: "CP" | "INVESTOR"
-): Promise<FormState | never> {
-  const passwordHash = await bcrypt.hash(data.password, 10);
-  try {
-    const user = await prisma.user.create({
-      data: {
-        role,
-        name: data.name,
-        phone: data.phone,
-        passwordHash,
-        firm: data.firm || undefined,
-        territory: data.territory || undefined,
-        budget: data.budget || undefined,
-        interest: data.interest || undefined,
-      },
-    });
-    await createSession(user.id, user.role);
-  } catch (err: unknown) {
-    if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
-      return { error: "An account with that phone number already exists. Try signing in instead." };
-    }
-    throw err;
-  }
+  await createSession(result.user.id, result.user.role);
   redirect("/portal");
 }
 
-export async function registerCp(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
-  const parsed = cpSchema.safeParse({
-    name: getFormValue(formData, "name"),
-    phone: getFormValue(formData, "phone"),
-    firm: getFormValue(formData, "firm"),
-    territory: getFormValue(formData, "territory"),
-    password: getFormValue(formData, "password"),
-  });
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  return createAccount({ ...parsed.data }, "CP");
-}
-
 export async function registerInvestor(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
-  const parsed = investorSchema.safeParse({
-    name: getFormValue(formData, "name"),
-    phone: getFormValue(formData, "phone"),
-    budget: getFormValue(formData, "budget"),
-    interest: getFormValue(formData, "interest"),
-    password: getFormValue(formData, "password"),
-  });
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  return createAccount({ ...parsed.data }, "INVESTOR");
+  const result = await registerInvestorFromFormData(formData);
+  if (!result.ok) return result.state;
+
+  await createSession(result.user.id, result.user.role);
+  redirect("/portal");
 }
 
 export async function login(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
-  const parsed = loginSchema.safeParse({
-    phone: getFormValue(formData, "phone"),
-    password: getFormValue(formData, "password"),
-  });
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
+  const result = await loginFromFormData(formData);
+  if (!result.ok) return result.state;
 
-  const user = await prisma.user.findUnique({ where: { phone: parsed.data.phone } });
-  if (!user) return { error: "No account found with that phone number." };
-
-  const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
-  if (!valid) return { error: "Incorrect password." };
-
-  await createSession(user.id, user.role);
-  redirect(user.role === "ADMIN" ? "/admin" : "/portal");
+  await createSession(result.user.id, result.user.role);
+  redirect(result.user.role === "ADMIN" ? "/admin" : "/portal");
 }
 
 export async function logout() {

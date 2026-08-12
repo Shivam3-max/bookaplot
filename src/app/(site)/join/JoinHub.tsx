@@ -1,31 +1,78 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import { useCurrentUser } from "@/context/SessionContext";
 import { TERRITORIES, CP_BENEFITS, INVESTOR_BENEFITS } from "@/lib/network-data";
-import { registerCp, registerInvestor, logout } from "@/app/actions/auth";
-import { submitSellerListing } from "@/app/actions/network";
+import { logout } from "@/app/actions/auth";
+import type { FormState } from "@/lib/auth-service";
 
 type Tab = "cp" | "investor" | "seller";
 
 const sellerInitialState = { error: undefined as string | undefined, ok: false };
 
 export default function JoinHub() {
+  const router = useRouter();
   const params = useSearchParams();
   const initial = (params.get("as") as Tab) || "cp";
   const [tab, setTab] = useState<Tab>(["cp", "investor", "seller"].includes(initial) ? initial : "cp");
   const user = useCurrentUser();
 
-  const [cpState, cpAction, cpPending] = useActionState(registerCp, undefined);
-  const [investorState, investorAction, investorPending] = useActionState(registerInvestor, undefined);
-  const [sellerState, sellerAction, sellerPending] = useActionState(async (_prev: typeof sellerInitialState, formData: FormData) => {
-    const result = await submitSellerListing(formData);
-    if (result?.error) return { error: result.error, ok: false };
-    return { error: undefined, ok: true };
-  }, sellerInitialState);
+  const [cpState, setCpState] = useState<FormState | undefined>(undefined);
+  const [cpPending, setCpPending] = useState(false);
+  const [investorState, setInvestorState] = useState<FormState | undefined>(undefined);
+  const [investorPending, setInvestorPending] = useState(false);
+  const [sellerState, setSellerState] = useState(sellerInitialState);
+  const [sellerPending, setSellerPending] = useState(false);
+
+  async function submitAuthForm(
+    url: string,
+    formData: FormData,
+    setState: (state: FormState | undefined) => void,
+    setPending: (pending: boolean) => void
+  ) {
+    setPending(true);
+    setState(undefined);
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    const payload = (await response.json()) as FormState & { redirectTo?: string };
+
+    if (!response.ok) {
+      setState(payload);
+      setPending(false);
+      return;
+    }
+
+    router.push(payload.redirectTo ?? "/portal");
+    router.refresh();
+  }
+
+  async function submitSellerForm(formData: FormData) {
+    setSellerPending(true);
+    setSellerState(sellerInitialState);
+
+    const response = await fetch("/api/seller-submissions", {
+      method: "POST",
+      body: formData,
+    });
+
+    const payload = (await response.json()) as { error?: string };
+
+    if (!response.ok) {
+      setSellerState({ error: payload.error, ok: false });
+      setSellerPending(false);
+      return;
+    }
+
+    setSellerState({ error: undefined, ok: true });
+    setSellerPending(false);
+  }
 
   const TABS: { id: Tab; label: string; sub: string }[] = [
     { id: "cp", label: "Channel Partner", sub: "Mandates · territory · leads" },
@@ -79,7 +126,12 @@ export default function JoinHub() {
 
         <div className="card mt-6 p-6 sm:p-8">
           {tab === "cp" && (
-            <form action={cpAction} className="grid gap-4 sm:grid-cols-2">
+            <form
+              action={async (formData) => {
+                await submitAuthForm("/api/auth/register-cp", formData, setCpState, setCpPending);
+              }}
+              className="grid gap-4 sm:grid-cols-2"
+            >
               <div className="sm:col-span-2">
                 <h2 className="font-display text-xl font-black">Channel Partner — Quick Onboarding</h2>
                 <p className="mt-1 text-sm text-graphite">Verification call follows; territory locks after verification.</p>
@@ -118,7 +170,12 @@ export default function JoinHub() {
           )}
 
           {tab === "investor" && (
-            <form action={investorAction} className="grid gap-4 sm:grid-cols-2">
+            <form
+              action={async (formData) => {
+                await submitAuthForm("/api/auth/register-investor", formData, setInvestorState, setInvestorPending);
+              }}
+              className="grid gap-4 sm:grid-cols-2"
+            >
               <div className="sm:col-span-2">
                 <h2 className="font-display text-xl font-black">Investor — Quick Onboarding</h2>
                 <p className="mt-1 text-sm text-graphite">Instant access to verified mandates and the Give &amp; Ask desk.</p>
@@ -175,7 +232,12 @@ export default function JoinHub() {
                 </p>
               </div>
             ) : (
-              <form action={sellerAction} className="grid gap-4 sm:grid-cols-2">
+              <form
+                action={async (formData) => {
+                  await submitSellerForm(formData);
+                }}
+                className="grid gap-4 sm:grid-cols-2"
+              >
                 <div className="sm:col-span-2">
                   <h2 className="font-display text-xl font-black">Seller / Owner — Quick Submission</h2>
                   <p className="mt-1 text-sm text-graphite">Approved properties become verified mandates pushed to {"the network's"} CPs and investors.</p>
