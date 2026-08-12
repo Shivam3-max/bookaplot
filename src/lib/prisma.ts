@@ -1,6 +1,5 @@
 import "server-only";
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
@@ -11,8 +10,7 @@ function createClient() {
     throw new Error("DATABASE_URL is required to initialize Prisma.");
   }
 
-  const adapter = new PrismaMariaDb(databaseUrl);
-  return new PrismaClient({ adapter });
+  return new PrismaClient();
 }
 
 export function getPrismaClient() {

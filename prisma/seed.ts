@@ -1,10 +1,8 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
 
-const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
 const DEMO_PASSWORD = "Demo1234"; // shared password for seeded demo CP/Investor accounts — dev only
 
