@@ -5,7 +5,13 @@ import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createClient() {
-  const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is required to initialize Prisma.");
+  }
+
+  const adapter = new PrismaMariaDb(databaseUrl);
   return new PrismaClient({ adapter });
 }
 

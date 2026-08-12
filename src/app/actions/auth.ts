@@ -41,7 +41,7 @@ const loginSchema = z.object({
 });
 
 async function createAccount(
-  data: { name: string; phone: string; password: string; firm?: string; territory?: string; budget?: string; interest?: string },
+  data: { name: string; phone: string; password: string; firm?: string; territory?: string; budget?: string; interest?: string | null },
   role: "CP" | "INVESTOR"
 ): Promise<FormState | never> {
   const passwordHash = await bcrypt.hash(data.password, 10);
