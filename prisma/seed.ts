@@ -1,8 +1,26 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is required for seeding.");
+}
+
+const url = new URL(databaseUrl);
+const adapter = new PrismaMariaDb({
+  host: url.hostname === "127.0.0.1" ? "localhost" : url.hostname,
+  port: url.port ? Number(url.port) : 3306,
+  user: decodeURIComponent(url.username),
+  password: decodeURIComponent(url.password),
+  database: url.pathname.replace(/^\//, ""),
+  connectionLimit: 5,
+  acquireTimeout: 10000,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 const DEMO_PASSWORD = "Demo1234"; // shared password for seeded demo CP/Investor accounts — dev only
 
