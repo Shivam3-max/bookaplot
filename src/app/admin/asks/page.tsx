@@ -1,16 +1,10 @@
 import { requireAdmin } from "@/lib/dal";
-import { prisma } from "@/lib/prisma";
+import { listAsks } from "@/lib/db";
 import AdminAsksClient from "./AsksClient";
 
 export default async function AdminAsks() {
   await requireAdmin();
-  const asks = await prisma.ask.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      investor: { select: { name: true } },
-      replies: { orderBy: { createdAt: "asc" } },
-    },
-  });
+  const asks = await listAsks();
 
   return <AdminAsksClient asks={asks} />;
 }

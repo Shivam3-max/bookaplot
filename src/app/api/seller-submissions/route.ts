@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { createSellerSubmission } from "@/lib/db";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -12,8 +12,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please fill in all required fields." }, { status: 400 });
   }
 
-  await prisma.sellerSubmission.create({
-    data: { name, phone, propertyDetail, expectedPrice: expectedPrice || undefined },
+  await createSellerSubmission({
+    name,
+    phone,
+    propertyDetail,
+    expectedPrice: expectedPrice || null,
   });
 
   return NextResponse.json({ ok: true });

@@ -4,16 +4,14 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { postAsk } from "@/app/actions/network";
 import type { CurrentUser } from "@/lib/dal";
-import type { Ask, AskReply, User } from "@prisma/client";
+import type { AskStatus, AskWithRelations } from "@/lib/db-types";
 
-type AskWithRelations = Ask & { investor: Pick<User, "name">; replies: AskReply[] };
-
-const statusLabel: Record<Ask["status"], string> = {
+const statusLabel: Record<AskStatus, string> = {
   OPEN: "Open",
   PLATFORM_REVERTED: "Platform Reverted",
   MATCHED: "Matched",
 };
-const statusTone = (s: Ask["status"]) =>
+const statusTone = (s: AskStatus) =>
   s === "MATCHED" ? "badge-green" : s === "PLATFORM_REVERTED" ? "badge-gold" : "badge-steel";
 
 function AskCard({ ask, cpView, onPitch, pitched }: { ask: AskWithRelations; cpView?: boolean; onPitch?: () => void; pitched?: boolean }) {

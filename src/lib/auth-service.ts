@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import * as z from "zod";
-import { prisma } from "@/lib/prisma";
+import { createUser, findAuthUserByPhone } from "@/lib/db";
+import type { Role } from "@/lib/db-types";
 
 export interface FormState {
   error?: string;
@@ -52,26 +53,23 @@ const loginSchema = z.object({
 async function createAccount(
   data: { name: string; phone: string; password: string; firm?: string; territory?: string; budget?: string; interest?: string | null },
   role: "CP" | "INVESTOR"
-): Promise<{ ok: true; user: { id: string; role: "CP" | "INVESTOR" | "ADMIN" } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
   const passwordHash = await bcrypt.hash(data.password, 10);
   try {
-    const user = await prisma.user.create({
-      data: {
-        role,
-        name: data.name,
-        phone: data.phone,
-        passwordHash,
-        firm: data.firm || undefined,
-        territory: data.territory || undefined,
-        budget: data.budget || undefined,
-        interest: data.interest || undefined,
-      },
-      select: { id: true, role: true },
+    const user = await createUser({
+      role,
+      name: data.name,
+      phone: data.phone,
+      passwordHash,
+      firm: data.firm || null,
+      territory: data.territory || null,
+      budget: data.budget || null,
+      interest: data.interest || null,
     });
 
-    return { ok: true, user };
+    return { ok: true, user: { id: user.id, role: user.role } };
   } catch (err: unknown) {
-    if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
+    if (err && typeof err === "object" && "code" in err && err.code === "ER_DUP_ENTRY") {
       return { ok: false, state: { error: "An account with that phone number already exists. Try signing in instead." } };
     }
 
@@ -81,7 +79,7 @@ async function createAccount(
 
 export async function registerCpFromFormData(
   formData: FormData
-): Promise<{ ok: true; user: { id: string; role: "CP" | "INVESTOR" | "ADMIN" } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
   const parsed = cpSchema.safeParse({
     name: getFormValue(formData, "name"),
     phone: getFormValue(formData, "phone"),
@@ -99,7 +97,7 @@ export async function registerCpFromFormData(
 
 export async function registerInvestorFromFormData(
   formData: FormData
-): Promise<{ ok: true; user: { id: string; role: "CP" | "INVESTOR" | "ADMIN" } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
   const parsed = investorSchema.safeParse({
     name: getFormValue(formData, "name"),
     phone: getFormValue(formData, "phone"),
@@ -117,7 +115,7 @@ export async function registerInvestorFromFormData(
 
 export async function loginFromFormData(
   formData: FormData
-): Promise<{ ok: true; user: { id: string; role: "CP" | "INVESTOR" | "ADMIN" } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
   const parsed = loginSchema.safeParse({
     phone: getFormValue(formData, "phone"),
     password: getFormValue(formData, "password"),
@@ -127,10 +125,7 @@ export async function loginFromFormData(
     return { ok: false, state: { fieldErrors: parsed.error.flatten().fieldErrors } };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { phone: parsed.data.phone },
-    select: { id: true, role: true, passwordHash: true },
-  });
+  const user = await findAuthUserByPhone(parsed.data.phone);
 
   if (!user) {
     return { ok: false, state: { error: "No account found with that phone number." } };

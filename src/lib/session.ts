@@ -1,7 +1,7 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import type { Role } from "@prisma/client";
+import type { Role } from "@/lib/db-types";
 
 function getEncodedKey() {
   const secretKey = process.env.SESSION_SECRET;

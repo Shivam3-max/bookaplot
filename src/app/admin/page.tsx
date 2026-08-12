@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/dal";
-import { prisma } from "@/lib/prisma";
+import { countAsks, countUsers } from "@/lib/db";
 import { DEALS } from "@/lib/data";
 import { LEADS, VISITS, SUBMISSIONS, NOTIFICATIONS } from "@/lib/admin-data";
 import { MANDATES } from "@/lib/network-data";
@@ -18,10 +18,10 @@ export default async function AdminDashboard() {
   await requireAdmin();
 
   const [cps, investors, pendingPartners, openAsks] = await Promise.all([
-    prisma.user.count({ where: { role: "CP" } }),
-    prisma.user.count({ where: { role: "INVESTOR" } }),
-    prisma.user.count({ where: { role: { in: ["CP", "INVESTOR"] }, status: "PENDING" } }),
-    prisma.ask.count({ where: { status: "OPEN" } }),
+    countUsers({ role: "CP" }),
+    countUsers({ role: "INVESTOR" }),
+    countUsers({ roles: ["CP", "INVESTOR"], status: "PENDING" }),
+    countAsks("OPEN"),
   ]);
 
   const liveDeals = DEALS.length;

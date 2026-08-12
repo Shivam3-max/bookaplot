@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requirePartner } from "@/lib/dal";
-import { prisma } from "@/lib/prisma";
+import { listAsks } from "@/lib/db";
 import { DEALS } from "@/lib/data";
 import { MANDATES } from "@/lib/network-data";
 import { LEADS } from "@/lib/admin-data";
@@ -10,10 +10,7 @@ export default async function PortalOverview() {
   const account = await requirePartner();
   const isCp = account.role === "CP";
 
-  const asks = await prisma.ask.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { investor: { select: { name: true } } },
-  });
+  const asks = await listAsks();
 
   const mandates = DEALS.filter((d) => MANDATES[d.slug]);
   const urgent = mandates.filter((d) => MANDATES[d.slug].urgent);

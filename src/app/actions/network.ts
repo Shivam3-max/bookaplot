@@ -1,28 +1,29 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+import {
+  createAsk,
+  createCreativeRequest,
+  createSellerSubmission,
+  replyToAskRecord,
+  updatePartnerStatus as updatePartnerStatusRecord,
+} from "@/lib/db";
 import { requireAdmin, requirePartner } from "@/lib/dal";
-import type { PartnerStatus } from "@prisma/client";
+import type { PartnerStatus } from "@/lib/db-types";
 
 export async function postAsk(formData: FormData) {
   const user = await requirePartner();
   if (user.role !== "INVESTOR") return;
 
-  await prisma.ask.create({
-    data: {
-      investorId: user.id,
-      budget: String(formData.get("budget") || ""),
-      type: String(formData.get("type") || ""),
-      locations: String(formData.get("locations") || ""),
-      urgency: String(formData.get("urgency") || ""),
-      note: String(formData.get("note") || ""),
-      replies: {
-        create: {
-          text: "Received by the Give & Ask desk. The team is matching your requirement against live mandates and off-market inventory — expect a revert within 24 hours.",
-        },
-      },
-    },
+  await createAsk({
+    investorId: user.id,
+    budget: String(formData.get("budget") || ""),
+    type: String(formData.get("type") || ""),
+    locations: String(formData.get("locations") || ""),
+    urgency: String(formData.get("urgency") || ""),
+    note: String(formData.get("note") || ""),
+    initialReplyText:
+      "Received by the Give & Ask desk. The team is matching your requirement against live mandates and off-market inventory - expect a revert within 24 hours.",
   });
 
   revalidatePath("/portal/asks");
@@ -32,13 +33,12 @@ export async function replyToAsk(askId: string, text: string, matched: boolean) 
   const admin = await requireAdmin();
   if (!text.trim()) return;
 
-  await prisma.$transaction([
-    prisma.askReply.create({ data: { askId, authorId: admin.id, text: text.trim() } }),
-    prisma.ask.update({
-      where: { id: askId },
-      data: { status: matched ? "MATCHED" : "PLATFORM_REVERTED" },
-    }),
-  ]);
+  await replyToAskRecord({
+    askId,
+    authorId: admin.id,
+    text: text.trim(),
+    matched,
+  });
 
   revalidatePath("/admin/asks");
   revalidatePath("/portal/asks");
@@ -46,12 +46,7 @@ export async function replyToAsk(askId: string, text: string, matched: boolean) 
 
 export async function setPartnerStatus(userId: string, status: PartnerStatus, territory?: string) {
   await requireAdmin();
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: { status, ...(territory !== undefined ? { territory } : {}) },
-  });
-
+  await updatePartnerStatusRecord(userId, status, territory);
   revalidatePath("/admin/partners");
 }
 
@@ -59,7 +54,7 @@ export async function requestCreative(title: string) {
   const user = await requirePartner();
   if (user.role !== "CP") return;
 
-  await prisma.creativeRequest.create({ data: { userId: user.id, title } });
+  await createCreativeRequest(user.id, title);
   revalidatePath("/portal/creatives");
 }
 
@@ -68,10 +63,15 @@ export async function submitSellerListing(formData: FormData) {
   const phone = String(formData.get("phone") || "").trim();
   const propertyDetail = String(formData.get("propertyDetail") || "").trim();
   const expectedPrice = String(formData.get("expectedPrice") || "").trim();
-  if (!name || !phone || !propertyDetail) return { error: "Please fill in all required fields." };
+  if (!name || !phone || !propertyDetail) {
+    return { error: "Please fill in all required fields." };
+  }
 
-  await prisma.sellerSubmission.create({
-    data: { name, phone, propertyDetail, expectedPrice: expectedPrice || undefined },
+  await createSellerSubmission({
+    name,
+    phone,
+    propertyDetail,
+    expectedPrice: expectedPrice || null,
   });
 
   return { ok: true };

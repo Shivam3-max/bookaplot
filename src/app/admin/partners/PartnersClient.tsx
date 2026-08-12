@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { setPartnerStatus } from "@/app/actions/network";
 import { TERRITORIES } from "@/lib/network-data";
-import type { PartnerStatus, User } from "@prisma/client";
+import type { PartnerStatus, PublicUser } from "@/lib/db-types";
 
 const tone = (s: PartnerStatus) =>
   s === "TERRITORY_LOCKED" ? "badge-gold" : s === "VERIFIED" ? "badge-green" : "badge-steel";
@@ -13,7 +13,7 @@ const label: Record<PartnerStatus, string> = {
   TERRITORY_LOCKED: "Territory Locked",
 };
 
-export default function PartnersClient({ partners }: { partners: User[] }) {
+export default function PartnersClient({ partners }: { partners: PublicUser[] }) {
   const [tab, setTab] = useState<"CP" | "INVESTOR">("CP");
   const [isPending, startTransition] = useTransition();
   const list = partners.filter((p) => p.role === tab);

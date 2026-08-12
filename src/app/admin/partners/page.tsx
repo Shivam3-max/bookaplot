@@ -1,13 +1,10 @@
 import { requireAdmin } from "@/lib/dal";
-import { prisma } from "@/lib/prisma";
+import { listPartners } from "@/lib/db";
 import PartnersClient from "./PartnersClient";
 
 export default async function AdminPartners() {
   await requireAdmin();
-  const partners = await prisma.user.findMany({
-    where: { role: { in: ["CP", "INVESTOR"] } },
-    orderBy: { createdAt: "desc" },
-  });
+  const partners = await listPartners();
 
   return <PartnersClient partners={partners} />;
 }

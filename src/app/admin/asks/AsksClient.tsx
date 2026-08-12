@@ -2,16 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { replyToAsk } from "@/app/actions/network";
-import type { Ask, AskReply, User } from "@prisma/client";
+import type { AskStatus, AskWithRelations } from "@/lib/db-types";
 
-type AskWithRelations = Ask & { investor: Pick<User, "name">; replies: AskReply[] };
-
-const statusLabel: Record<Ask["status"], string> = {
+const statusLabel: Record<AskStatus, string> = {
   OPEN: "Open",
   PLATFORM_REVERTED: "Platform Reverted",
   MATCHED: "Matched",
 };
-const statusTone = (s: Ask["status"]) =>
+const statusTone = (s: AskStatus) =>
   s === "MATCHED" ? "badge-green" : s === "PLATFORM_REVERTED" ? "badge-gold" : "badge-steel";
 
 export default function AdminAsksClient({ asks }: { asks: AskWithRelations[] }) {

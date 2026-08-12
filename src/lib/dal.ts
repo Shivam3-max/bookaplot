@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getPublicUserById } from "@/lib/db";
 import { getSessionPayload } from "@/lib/session";
 
 /** Redirects to /login if there's no valid session. Memoized per request. */
@@ -18,33 +18,19 @@ export const getOptionalSession = cache(async () => {
   return { userId: payload.userId, role: payload.role };
 });
 
-const publicUserSelect = {
-  id: true,
-  role: true,
-  name: true,
-  phone: true,
-  email: true,
-  firm: true,
-  territory: true,
-  budget: true,
-  interest: true,
-  status: true,
-  createdAt: true,
-} as const;
-
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 
 /** Full current-user row (never includes passwordHash), or null if signed out. */
 export const getCurrentUser = cache(async () => {
   const session = await getOptionalSession();
   if (!session) return null;
-  return prisma.user.findUnique({ where: { id: session.userId }, select: publicUserSelect });
+  return getPublicUserById(session.userId);
 });
 
 /** Like getCurrentUser, but redirects to /login if signed out. */
 export async function requireUser() {
   const session = await verifySession();
-  const user = await prisma.user.findUnique({ where: { id: session.userId }, select: publicUserSelect });
+  const user = await getPublicUserById(session.userId);
   if (!user) redirect("/login");
   return user;
 }
