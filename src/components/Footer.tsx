@@ -16,8 +16,8 @@ const COLS = [
   {
     title: "Network",
     links: [
-      { href: "/join?as=cp", label: "Join as Channel Partner" },
-      { href: "/join?as=investor", label: "Join as Investor" },
+      { href: "/join?as=cp", label: "Apply as Channel Partner" },
+      { href: "/join?as=investor", label: "Apply as Investor" },
       { href: "/join?as=seller", label: "Sell / List Property" },
       { href: "/about", label: "About Mondato" },
       { href: "/why-bookaplot", label: "Why Mondato" },

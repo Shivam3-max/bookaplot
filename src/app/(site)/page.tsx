@@ -87,8 +87,8 @@ export default function Home() {
             </Reveal>
             <Reveal delay={240}>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/join?as=cp" className="btn-gold">Join as Channel Partner</Link>
-                <Link href="/join?as=investor" className="btn-primary">Join as Investor</Link>
+                <Link href="/join?as=cp" className="btn-gold">Apply as Channel Partner</Link>
+                <Link href="/join?as=investor" className="btn-primary">Apply as Investor</Link>
                 <Link href="/deals" className="btn-ghost">See Deal Glimpses</Link>
               </div>
             </Reveal>
@@ -196,7 +196,7 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="p-5 pt-0">
-                  <Link href="/join?as=investor" className="btn-primary w-full justify-center">Join as Investor</Link>
+                  <Link href="/join?as=investor" className="btn-primary w-full justify-center">Apply as Investor</Link>
                 </div>
               </div>
             </Reveal>
@@ -520,8 +520,8 @@ export default function Home() {
                 inventory. The platform connects all three — and everyone moves faster.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Link href="/join?as=cp" className="btn-gold">Join as Channel Partner</Link>
-                <Link href="/join?as=investor" className="btn !bg-white !text-ink hover:!bg-paper">Join as Investor</Link>
+                <Link href="/join?as=cp" className="btn-gold">Apply as Channel Partner</Link>
+                <Link href="/join?as=investor" className="btn !bg-white !text-ink hover:!bg-paper">Apply as Investor</Link>
                 <Link href="/join?as=seller" className="btn border border-white/30 text-white hover:border-white">List a Property</Link>
               </div>
             </div>
