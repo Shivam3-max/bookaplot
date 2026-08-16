@@ -61,11 +61,11 @@ export default function Footer() {
             Zirakpur, New Chandigarh and Kharar.
           </p>
           <div className="mt-5 space-y-1.5 text-sm text-white/70">
-            <p>+91 98XXX XXXXX &nbsp;·&nbsp; hello@mondato.com</p>
+            <p>+91 79701 36666 &nbsp;·&nbsp; hello@mondato.com</p>
             <p>Sector 82, Mohali, Punjab</p>
           </div>
           <a
-            href="https://wa.me/919800000000"
+            href="https://wa.me/917970136666"
             className="mt-5 inline-flex items-center gap-2 rounded-full bg-green px-4 py-2 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5 13.9c-.2.6-1.2 1.1-1.7 1.2-.4 0-1 .1-1.6-.1a13 13 0 0 1-5.9-5.2c-.6-1-.9-2-.9-2.3 0-.7.4-1.3.8-1.7.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.2.2-.3.4-.1.7a9 9 0 0 0 3.9 3.5c.3.1.5.1.7-.1l.7-.8c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.4 0 .1 0 .7-.4 1.2Z"/></svg>

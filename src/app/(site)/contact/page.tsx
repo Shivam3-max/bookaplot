@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const CHANNELS = [
-  { t: "Phone", v: "+91 98XXX XXXXX", d: "Mon–Sat, 9:30 AM – 7 PM IST" },
+  { t: "Phone", v: "+91 79701 36666", d: "Mon–Sat, 9:30 AM – 7 PM IST" },
   { t: "WhatsApp", v: "Chat with the team", d: "Fastest for deal-specific questions" },
   { t: "Email", v: "hello@mondato.com", d: "Replies within one working day" },
   { t: "Office", v: "Sector 82, Mohali, Punjab", d: "Visits by appointment" },
