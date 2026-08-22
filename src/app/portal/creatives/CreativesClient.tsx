@@ -2,10 +2,18 @@
 
 import { useState, useTransition } from "react";
 import { requestCreative } from "@/app/actions/network";
-import { CREATIVES } from "@/lib/network-data";
+import type { CreativeRecord } from "@/lib/content-queries";
 import type { CurrentUser } from "@/lib/dal";
 
-export default function CreativesClient({ account, requestCount }: { account: CurrentUser; requestCount: number }) {
+export default function CreativesClient({
+  account,
+  requestCount,
+  creatives: CREATIVES,
+}: {
+  account: CurrentUser;
+  requestCount: number;
+  creatives: CreativeRecord[];
+}) {
   const [requested, setRequested] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const isCp = account.role === "CP";

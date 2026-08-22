@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSaved } from "@/context/SavedContext";
-import { getDeal } from "@/lib/data";
+import type { DealRecord } from "@/lib/content-queries";
 import { inr } from "@/lib/format";
 
-export default function CompareDrawer() {
+export default function CompareDrawer({ deals }: { deals: DealRecord[] }) {
   const { compare, toggleCompare, clearCompare } = useSaved();
   const pathname = usePathname();
   if (compare.length === 0 || pathname === "/saved") return null;
@@ -16,7 +16,7 @@ export default function CompareDrawer() {
       <div className="mx-auto flex max-w-3xl items-center gap-3 rounded-2xl border border-line bg-white/90 p-3 shadow-[0_20px_50px_-20px_rgba(17,17,17,0.4)] backdrop-blur-xl">
         <div className="flex flex-1 items-center gap-2 overflow-x-auto">
           {compare.map((slug) => {
-            const d = getDeal(slug);
+            const d = deals.find((x) => x.slug === slug);
             if (!d) return null;
             return (
               <div key={slug} className="flex shrink-0 items-center gap-2 rounded-xl bg-paper px-3 py-1.5">

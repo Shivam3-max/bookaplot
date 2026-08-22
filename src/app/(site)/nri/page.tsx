@@ -3,7 +3,7 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import SectionHead from "@/components/SectionHead";
 import LeadForm from "@/components/LeadForm";
-import { DEALS } from "@/lib/data";
+import { listDeals } from "@/lib/content-queries";
 import DealCard from "@/components/DealCard";
 
 export const metadata: Metadata = {
@@ -19,7 +19,8 @@ const NRI_POINTS = [
   { t: "Documentation guidance", d: "PoA structuring, NRE/NRO payment routing, TDS notes, and registry coordination — guidance at every step, with independent legal verification encouraged." },
 ];
 
-export default function NriPage() {
+export default async function NriPage() {
+  const DEALS = await listDeals();
   const picks = DEALS.filter((d) => d.badges.includes("NRI Friendly")).slice(0, 3);
   return (
     <>

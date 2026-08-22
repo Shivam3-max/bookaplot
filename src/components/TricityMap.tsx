@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LOCATIONS, DEALS } from "@/lib/data";
+import type { DealRecord, LocationRecord } from "@/lib/content-queries";
 import { inr } from "@/lib/format";
 
 interface Props {
+  deals: DealRecord[];
+  locations: LocationRecord[];
   showDeals?: boolean;
   heat?: boolean;
   corridors?: boolean;
@@ -16,6 +18,8 @@ interface Props {
 
 /** Stylized 3D-feel Tricity opportunity map (SVG). */
 export default function TricityMap({
+  deals: DEALS,
+  locations: LOCATIONS,
   showDeals = true,
   heat = true,
   corridors = true,

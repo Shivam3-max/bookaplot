@@ -1,18 +1,21 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, FormEvent } from "react";
-import { DEALS, getDeal } from "@/lib/data";
+import { useState, useTransition } from "react";
+import type { DealRecord } from "@/lib/content-queries";
+import { createVisit } from "@/app/actions/visits";
 import { useSaved } from "@/context/SavedContext";
 import Reveal from "@/components/Reveal";
 import { inr } from "@/lib/format";
 
-export default function BookVisit() {
+export default function BookVisit({ deals: DEALS }: { deals: DealRecord[] }) {
   const params = useSearchParams();
   const preselected = params.get("deal");
   const { saved } = useSaved();
   const [selected, setSelected] = useState<string[]>(preselected ? [preselected] : []);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const shortlist = DEALS.filter((d) => saved.includes(d.slug) || selected.includes(d.slug));
   const options = shortlist.length > 0 ? shortlist : DEALS.slice(0, 6);
@@ -20,9 +23,17 @@ export default function BookVisit() {
   const toggle = (slug: string) =>
     setSelected((s) => (s.includes(slug) ? s.filter((x) => x !== slug) : [...s, slug]));
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    setSent(true);
+  const submit = (formData: FormData) => {
+    setError(null);
+    formData.set("dealSlugs", selected.join(","));
+    startTransition(async () => {
+      const result = await createVisit(formData);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+      setSent(true);
+    });
   };
 
   return (
@@ -58,7 +69,7 @@ export default function BookVisit() {
           </Reveal>
         ) : (
           <Reveal>
-            <form onSubmit={submit} className="card space-y-6 p-6 sm:p-8">
+            <form action={submit} className="card space-y-6 p-6 sm:p-8">
               <div>
                 <p className="label">Select deal(s) to visit</p>
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -81,32 +92,34 @@ export default function BookVisit() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div><label className="label">Name *</label><input required className="input" placeholder="Your name" /></div>
-                <div><label className="label">Phone *</label><input required type="tel" className="input" placeholder="+91" /></div>
-                <div><label className="label">Email</label><input type="email" className="input" placeholder="you@email.com" /></div>
-                <div><label className="label">Preferred date *</label><input required type="date" className="input" /></div>
+                <div><label className="label">Name *</label><input name="name" required className="input" placeholder="Your name" /></div>
+                <div><label className="label">Phone *</label><input name="phone" required type="tel" className="input" placeholder="+91" /></div>
+                <div><label className="label">Email</label><input name="email" type="email" className="input" placeholder="you@email.com" /></div>
+                <div><label className="label">Preferred date *</label><input name="preferredDate" required type="date" className="input" /></div>
                 <div>
                   <label className="label">Budget</label>
-                  <select className="input" defaultValue="">
+                  <select name="budget" className="input" defaultValue="">
                     <option value="" disabled>Select…</option>
                     <option>Under ₹50 L</option><option>₹50 L – ₹1.5 Cr</option><option>Above ₹1.5 Cr</option>
                   </select>
                 </div>
                 <div>
                   <label className="label">Buying purpose</label>
-                  <select className="input" defaultValue="">
+                  <select name="purpose" className="input" defaultValue="">
                     <option value="" disabled>Select…</option>
                     <option>Investment</option><option>Self-use / construction</option><option>Commercial</option><option>Exploring</option>
                   </select>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="label">Notes</label>
-                  <textarea className="input min-h-20" placeholder="Anything the coordinator should know…" />
+                  <textarea name="note" className="input min-h-20" placeholder="Anything the coordinator should know…" />
                 </div>
               </div>
 
-              <button type="submit" className="btn-gold w-full justify-center">
-                Book Site Visit{selected.length > 0 ? ` (${selected.length} propert${selected.length === 1 ? "y" : "ies"})` : ""}
+              {error && <p className="text-sm font-semibold text-red">{error}</p>}
+
+              <button type="submit" disabled={isPending} className="btn-gold w-full justify-center disabled:opacity-60">
+                {isPending ? "Sending…" : `Book Site Visit${selected.length > 0 ? ` (${selected.length} propert${selected.length === 1 ? "y" : "ies"})` : ""}`}
               </button>
             </form>
           </Reveal>

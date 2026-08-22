@@ -1,4 +1,4 @@
-import { DEALS } from "@/lib/data";
+import { listDeals } from "@/lib/content-queries";
 
 const SOURCES = [
   ["Organic search", 42], ["Direct", 21], ["WhatsApp shares", 15], ["Social", 12], ["Referral", 10],
@@ -28,7 +28,8 @@ function Bars({ data, tone }: { data: readonly (readonly [string, number])[]; to
   );
 }
 
-export default function AdminAnalytics() {
+export default async function AdminAnalytics() {
+  const DEALS = await listDeals();
   const top = [...DEALS].sort((a, b) => b.score - a.score).slice(0, 5);
   return (
     <div className="space-y-6">

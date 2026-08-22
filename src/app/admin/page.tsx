@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/dal";
 import { countAsks, countUsers } from "@/lib/db";
-import { DEALS } from "@/lib/data";
-import { LEADS, VISITS, SUBMISSIONS, NOTIFICATIONS } from "@/lib/admin-data";
-import { MANDATES } from "@/lib/network-data";
+import { listDeals, listMandates, listVisits } from "@/lib/content-queries";
+import { LEADS, SUBMISSIONS, NOTIFICATIONS } from "@/lib/admin-data";
 import { inr } from "@/lib/format";
 
 const FUNNEL = [
@@ -17,11 +16,14 @@ const FUNNEL = [
 export default async function AdminDashboard() {
   await requireAdmin();
 
-  const [cps, investors, pendingPartners, openAsks] = await Promise.all([
+  const [cps, investors, pendingPartners, openAsks, DEALS, MANDATES, VISITS] = await Promise.all([
     countUsers({ role: "CP" }),
     countUsers({ role: "INVESTOR" }),
     countUsers({ roles: ["CP", "INVESTOR"], status: "PENDING" }),
     countAsks("OPEN"),
+    listDeals(),
+    listMandates(),
+    listVisits(),
   ]);
 
   const liveDeals = DEALS.length;

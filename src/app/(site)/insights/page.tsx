@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { POSTS } from "@/lib/data";
+import { listPosts } from "@/lib/content-queries";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
@@ -8,7 +8,16 @@ export const metadata: Metadata = {
   description: "Market updates, area guides, plotted investment insights and buying-process content for Tricity real estate.",
 };
 
-export default function InsightsPage() {
+export default async function InsightsPage() {
+  const POSTS = await listPosts();
+  if (POSTS.length === 0) {
+    return (
+      <section className="container-x py-16 text-center">
+        <p className="font-display text-xl font-bold">No insights published yet</p>
+        <p className="mt-2 text-sm text-graphite">Check back soon.</p>
+      </section>
+    );
+  }
   const [lead, ...rest] = POSTS;
   return (
     <>

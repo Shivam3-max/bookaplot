@@ -1,23 +1,25 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { POSTS, getPost, DEALS } from "@/lib/data";
+import { listPosts, getPost, listDeals } from "@/lib/content-queries";
 import Reveal from "@/components/Reveal";
 import DealCard from "@/components/DealCard";
 
-export function generateStaticParams() {
-  return POSTS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const posts = await listPosts();
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const post = getPost((await params).slug);
+  const post = await getPost((await params).slug);
   if (!post) return {};
   return { title: post.title, description: post.excerpt };
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const post = getPost((await params).slug);
+  const post = await getPost((await params).slug);
   if (!post) notFound();
-  const others = POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const [allPosts, DEALS] = await Promise.all([listPosts(), listDeals()]);
+  const others = allPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
     <>

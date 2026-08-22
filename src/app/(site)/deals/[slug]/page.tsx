@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { DEALS, getDeal, LOCATIONS } from "@/lib/data";
+import { listDeals, getDeal, getLocation } from "@/lib/content-queries";
 import { inr, inrFull, pctBelow } from "@/lib/format";
 import DealVisual from "@/components/DealVisual";
 import ScoreRing from "@/components/ScoreRing";
@@ -11,12 +11,13 @@ import DealActions from "./DealActions";
 import Faq from "./Faq";
 import Gate from "@/components/Gate";
 
-export function generateStaticParams() {
-  return DEALS.map((d) => ({ slug: d.slug }));
+export async function generateStaticParams() {
+  const deals = await listDeals();
+  return deals.map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const deal = getDeal((await params).slug);
+  const deal = await getDeal((await params).slug);
   if (!deal) return {};
   return {
     title: `${deal.title} — ${deal.cityLabel}`,
@@ -25,11 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function DealDetail({ params }: { params: Promise<{ slug: string }> }) {
-  const deal = getDeal((await params).slug);
+  const deal = await getDeal((await params).slug);
   if (!deal) notFound();
   const below = pctBelow(deal.pricePerUnit, deal.benchmarkPerUnit);
-  const location = LOCATIONS.find((l) => l.slug === deal.city);
-  const related = DEALS.filter((d) => d.slug !== deal.slug && (d.city === deal.city || d.type === deal.type)).slice(0, 4);
+  const location = await getLocation(deal.city);
+  const allDeals = await listDeals();
+  const related = allDeals.filter((d) => d.slug !== deal.slug && (d.city === deal.city || d.type === deal.type)).slice(0, 4);
 
   return (
     <>

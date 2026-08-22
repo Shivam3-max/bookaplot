@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { useSaved } from "@/context/SavedContext";
-import { DEALS, getDeal } from "@/lib/data";
+import type { DealRecord } from "@/lib/content-queries";
 import DealCard from "@/components/DealCard";
 import Reveal from "@/components/Reveal";
 import ScoreRing from "@/components/ScoreRing";
 import { inr, inrFull, pctBelow } from "@/lib/format";
 
-export default function SavedDashboard() {
+export default function SavedDashboard({ deals: DEALS }: { deals: DealRecord[] }) {
   const { saved, compare, viewed, toggleCompare, clearCompare } = useSaved();
+  const getDeal = (slug: string) => DEALS.find((d) => d.slug === slug);
   const savedDeals = DEALS.filter((d) => saved.includes(d.slug));
   const compareDeals = compare.map(getDeal).filter(Boolean) as typeof DEALS;
   const viewedDeals = viewed.map(getDeal).filter(Boolean).slice(0, 4) as typeof DEALS;

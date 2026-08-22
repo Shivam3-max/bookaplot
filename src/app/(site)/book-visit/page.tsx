@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { listDeals } from "@/lib/content-queries";
 import BookVisit from "./BookVisit";
 
 export const metadata: Metadata = {
@@ -7,10 +8,11 @@ export const metadata: Metadata = {
   description: "Book an assisted site visit for one or multiple shortlisted Tricity opportunities.",
 };
 
-export default function BookVisitPage() {
+export default async function BookVisitPage() {
+  const deals = await listDeals();
   return (
     <Suspense>
-      <BookVisit />
+      <BookVisit deals={deals} />
     </Suspense>
   );
 }

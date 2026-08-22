@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { DEALS, LOCATIONS, STATS, TESTIMONIALS } from "@/lib/data";
+import { STATS } from "@/lib/data";
+import { listDeals, listLocations, listTestimonials } from "@/lib/content-queries";
 import DealCard from "@/components/DealCard";
 import TricityMap from "@/components/TricityMap";
 import Reveal from "@/components/Reveal";
@@ -42,7 +43,8 @@ const CALCS = [
   { href: "/calculators#plot", t: "Total Plot Investment", d: "All-in cost, development, and exit value." },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const [DEALS, LOCATIONS, TESTIMONIALS] = await Promise.all([listDeals(), listLocations(), listTestimonials()]);
   const featured = DEALS.filter((d) => d.featured);
 
   return (
@@ -116,7 +118,7 @@ export default function Home() {
           </div>
           <Reveal delay={200}>
             <div className="float-y card overflow-hidden p-1.5 sm:p-2">
-              <TricityMap className="aspect-square" />
+              <TricityMap deals={DEALS} locations={LOCATIONS} className="aspect-square" />
             </div>
           </Reveal>
         </div>
@@ -374,7 +376,7 @@ export default function Home() {
           </Reveal>
           <Reveal delay={150}>
             <div className="card overflow-hidden p-2">
-              <TricityMap className="aspect-[4/3]" />
+              <TricityMap deals={DEALS} locations={LOCATIONS} className="aspect-[4/3]" />
             </div>
           </Reveal>
         </div>

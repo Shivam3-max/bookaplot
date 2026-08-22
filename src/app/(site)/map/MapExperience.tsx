@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LOCATIONS, DEALS } from "@/lib/data";
+import type { DealRecord, LocationRecord } from "@/lib/content-queries";
 import TricityMap from "@/components/TricityMap";
 import Reveal from "@/components/Reveal";
 import DealCard from "@/components/DealCard";
@@ -13,7 +13,7 @@ const LAYERS = [
   { id: "heat", label: "Opportunity heat" },
 ];
 
-export default function MapExperience() {
+export default function MapExperience({ deals: DEALS, locations: LOCATIONS }: { deals: DealRecord[]; locations: LocationRecord[] }) {
   const [active, setActive] = useState<string | null>("mohali");
   const [layers, setLayers] = useState<string[]>(["deals", "corridors", "heat"]);
   const loc = LOCATIONS.find((l) => l.slug === active);
@@ -44,6 +44,8 @@ export default function MapExperience() {
           <Reveal>
             <div className="card p-2">
               <TricityMap
+                deals={DEALS}
+                locations={LOCATIONS}
                 activeCity={active}
                 onSelect={setActive}
                 showDeals={layers.includes("deals")}

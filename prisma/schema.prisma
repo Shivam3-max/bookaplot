@@ -30,6 +30,13 @@ enum SubmissionStatus {
   REJECTED
 }
 
+enum VisitStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id           String        @id @default(cuid())
   role         Role
@@ -44,9 +51,10 @@ model User {
   status       PartnerStatus @default(PENDING)
   createdAt    DateTime      @default(now())
 
-  asks             Ask[]             @relation("InvestorAsks")
-  askReplies       AskReply[]
-  creativeRequests CreativeRequest[]
+  asks              Ask[]             @relation("InvestorAsks")
+  askReplies        AskReply[]
+  creativeRequests  CreativeRequest[]
+  coordinatedVisits Visit[]           @relation("VisitCoordinator")
 
   @@map("users")
 }
@@ -102,4 +110,157 @@ model SellerSubmission {
   createdAt      DateTime         @default(now())
 
   @@map("seller_submissions")
+}
+
+// --- Content: deals, mandates, locations, blog, testimonials, creatives ---
+// These replace what used to be hardcoded arrays in src/lib/data.ts and
+// src/lib/network-data.ts. Descriptive/categorical fields (city, type, status,
+// mandateType, maturity, creative type/status) are kept as plain strings
+// rather than enums so admins can introduce a new category from the CRUD UI
+// without a schema migration — unlike AskStatus/PartnerStatus/SubmissionStatus,
+// nothing in the app branches on these values.
+
+model Deal {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  title              String
+  subtitle           String
+  city               String
+  cityLabel          String
+  microLocation      String
+  type               String
+  purpose            Json // string[]
+  status             String
+  badges             Json // string[]
+  price              Int
+  priceMax           Int?
+  pricePerUnit       Int
+  unit               String
+  benchmarkPerUnit   Int
+  sizes              Json // string[]
+  areaLabel          String
+  facing             String?
+  roadWidth          String?
+  possession         String
+  approval           String
+  score              Int
+  upsideNote         String
+  highlights         Json // string[]
+  whyStandsOut       Json // string[]
+  locationAdvantages Json // { label, value }[]
+  demandDrivers      Json // string[]
+  suitsWho           Json // string[]
+  overview           String   @db.Text
+  bookingAmount      Int?
+  featured           Boolean  @default(false)
+  hot                Boolean  @default(false)
+  investorPick       Boolean  @default(false)
+  newListing         Boolean  @default(false)
+  mapX               Int
+  mapY               Int
+  hue                Int
+  faqs               Json // { q, a }[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  mandate   Mandate?
+  creatives Creative[]
+
+  @@map("deals")
+}
+
+model Mandate {
+  id           String   @id @default(cuid())
+  deal         Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  dealId       String   @unique
+  commission   String
+  mandateType  String
+  validity     String
+  investorNote String   @db.Text
+  urgent       Boolean  @default(false)
+  kit          Json // string[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("mandates")
+}
+
+model LocationZone {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  tagline      String
+  overview     String   @db.Text
+  maturity     String
+  growthScore  Int
+  priceBand    String
+  avgPerSqYd   String
+  idealBuyer   Json // string[]
+  whyBuy       Json // string[]
+  connectivity Json // { label, value }[]
+  trend        Json // number[]
+  mapX         Int
+  mapY         Int
+  hue          Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("location_zones")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  category  String
+  excerpt   String   @db.Text
+  date      DateTime
+  readMins  Int
+  body      Json // string[] of paragraphs
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("posts")
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  quote     String   @db.Text
+  name      String
+  context   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("testimonials")
+}
+
+model Creative {
+  id        String   @id @default(cuid())
+  title     String
+  type      String
+  deal      Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  dealId    String?
+  status    String
+  hue       Int
+  createdAt DateTime @default(now())
+
+  @@index([dealId])
+  @@map("creatives")
+}
+
+model Visit {
+  id            String      @id @default(cuid())
+  customerName  String
+  customerPhone String
+  dealSlugs     Json // string[]
+  preferredDate DateTime
+  status        VisitStatus @default(REQUESTED)
+  coordinator   User?       @relation("VisitCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+  coordinatorId String?
+  feedback      String?     @db.Text
+  createdAt     DateTime    @default(now())
+
+  @@index([coordinatorId])
+  @@map("visits")
 }

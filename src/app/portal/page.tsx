@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { requirePartner } from "@/lib/dal";
 import { listAsks } from "@/lib/db";
-import { DEALS } from "@/lib/data";
-import { MANDATES } from "@/lib/network-data";
+import { listDeals, listMandates } from "@/lib/content-queries";
 import { LEADS } from "@/lib/admin-data";
 import { inr } from "@/lib/format";
 
@@ -10,7 +9,7 @@ export default async function PortalOverview() {
   const account = await requirePartner();
   const isCp = account.role === "CP";
 
-  const asks = await listAsks();
+  const [asks, DEALS, MANDATES] = await Promise.all([listAsks(), listDeals(), listMandates()]);
 
   const mandates = DEALS.filter((d) => MANDATES[d.slug]);
   const urgent = mandates.filter((d) => MANDATES[d.slug].urgent);

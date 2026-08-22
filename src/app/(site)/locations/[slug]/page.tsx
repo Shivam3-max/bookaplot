@@ -1,17 +1,18 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { LOCATIONS, getLocation, dealsByCity } from "@/lib/data";
+import { listLocations, getLocation, dealsByCity, listDeals } from "@/lib/content-queries";
 import Reveal from "@/components/Reveal";
 import DealCard from "@/components/DealCard";
 import Sparkline from "@/components/Sparkline";
 import TricityMap from "@/components/TricityMap";
 
-export function generateStaticParams() {
-  return LOCATIONS.map((l) => ({ slug: l.slug }));
+export async function generateStaticParams() {
+  const locations = await listLocations();
+  return locations.map((l) => ({ slug: l.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const loc = getLocation((await params).slug as never);
+  const loc = await getLocation((await params).slug);
   if (!loc) return {};
   return {
     title: `${loc.name} Real Estate — Plots & Property Deals`,
@@ -20,9 +21,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function LocationDetail({ params }: { params: Promise<{ slug: string }> }) {
-  const loc = getLocation((await params).slug as never);
+  const loc = await getLocation((await params).slug);
   if (!loc) notFound();
-  const deals = dealsByCity(loc.slug);
+  const [deals, allLocations, allDeals] = await Promise.all([dealsByCity(loc.slug), listLocations(), listDeals()]);
 
   return (
     <>
@@ -46,7 +47,7 @@ export default async function LocationDetail({ params }: { params: Promise<{ slu
           </Reveal>
           <Reveal delay={140}>
             <div className="card p-2">
-              <TricityMap activeCity={loc.slug} showDeals className="aspect-square" />
+              <TricityMap deals={allDeals} locations={allLocations} activeCity={loc.slug} showDeals className="aspect-square" />
             </div>
           </Reveal>
         </div>

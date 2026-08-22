@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LOCATIONS, DEALS } from "@/lib/data";
+import { listLocations, listDeals } from "@/lib/content-queries";
 import Reveal from "@/components/Reveal";
 import Sparkline from "@/components/Sparkline";
 
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
     "Explore real estate opportunities by city across Chandigarh, Mohali, Panchkula, Zirakpur, New Chandigarh, Kharar and the Derabassi airport belt.",
 };
 
-export default function LocationsPage() {
+export default async function LocationsPage() {
+  const [LOCATIONS, DEALS] = await Promise.all([listLocations(), listDeals()]);
   return (
     <>
       <section className="grid-bg border-b border-line py-14">

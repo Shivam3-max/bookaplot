@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { DEALS, LOCATIONS } from "@/lib/data";
+import type { DealRecord, LocationRecord } from "@/lib/content-queries";
 import DealCard from "@/components/DealCard";
 import Reveal from "@/components/Reveal";
 import { pctBelow } from "@/lib/format";
@@ -17,7 +17,7 @@ const SORTS = [
   { id: "score", label: "Deal score" },
 ];
 
-export default function Marketplace() {
+export default function Marketplace({ deals: DEALS, locations: LOCATIONS }: { deals: DealRecord[]; locations: LocationRecord[] }) {
   const params = useSearchParams();
   const [city, setCity] = useState(params.get("city") || "");
   const [type, setType] = useState(params.get("type") || "");

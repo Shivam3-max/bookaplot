@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LOCATIONS } from "@/lib/data";
+import type { LocationRecord } from "@/lib/content-queries";
 
-export default function HeroSearch() {
+export default function HeroSearch({ locations: LOCATIONS }: { locations: LocationRecord[] }) {
   const router = useRouter();
   const [city, setCity] = useState("");
   const [type, setType] = useState("");
