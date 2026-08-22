@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["mysql2"],
-  turbopack: { root: path.join(__dirname) },
+  turbopack: { root: process.cwd() },
 };
 
 export default nextConfig;
