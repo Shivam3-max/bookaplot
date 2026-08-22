@@ -2,7 +2,7 @@ import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
-import { getDatabaseConfig } from "@/lib/database-config";
+import { getDatabaseConfig } from "../src/lib/database-config.ts";
 
 const config = getDatabaseConfig();
 const adapter = new PrismaMariaDb({
