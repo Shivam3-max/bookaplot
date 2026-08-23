@@ -78,8 +78,12 @@ export default function PortalShell({ user, children }: { user: CurrentUser; chi
             Welcome back, {user.name.split(" ")[0]} — {user.role === "CP" ? "your territory is live." : "the desk is watching the market for you."}
           </span>
           <div className="flex items-center gap-3">
-            <span className={`chip !text-[11px] ${user.role === "CP" ? "badge-gold" : "badge-green"}`}>
-              {user.role === "CP" ? "● Channel Partner" : "● Verified Investor"}
+            <span className={`chip !text-[11px] ${user.role === "CP" ? "badge-gold" : user.status === "PENDING" ? "badge-steel" : "badge-green"}`}>
+              {user.role === "CP"
+                ? "● Channel Partner"
+                : user.status === "PENDING"
+                  ? "● Investor · Pending Verification"
+                  : "● Verified Investor"}
             </span>
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink font-display text-sm font-black text-white">
               {user.name[0]?.toUpperCase()}
