@@ -1,25 +1,25 @@
 import Link from "next/link";
 import { requirePartner } from "@/lib/dal";
 import { listAsks } from "@/lib/db";
-import { listDeals, listMandates } from "@/lib/content-queries";
-import { LEADS } from "@/lib/admin-data";
+import { listDeals, listMandates, listLeads } from "@/lib/content-queries";
 import { inr } from "@/lib/format";
 
 export default async function PortalOverview() {
   const account = await requirePartner();
   const isCp = account.role === "CP";
 
-  const [asks, DEALS, MANDATES] = await Promise.all([listAsks(), listDeals(), listMandates()]);
+  const [asks, DEALS, MANDATES, leads] = await Promise.all([listAsks(), listDeals(), listMandates(), listLeads()]);
 
   const mandates = DEALS.filter((d) => MANDATES[d.slug]);
   const urgent = mandates.filter((d) => MANDATES[d.slug].urgent);
   const myAsks = asks.filter((a) => a.investorId === account.id);
+  const activeLeadsCount = leads.filter((l) => l.stage !== "CLOSED_WON" && l.stage !== "CLOSED_LOST").length;
 
   const kpis = isCp
     ? [
         { label: "Live mandates", value: String(mandates.length), href: "/portal/deals", tone: "var(--green)" },
         { label: "Your territory", value: account.status === "TERRITORY_LOCKED" ? "Locked" : account.territory ? "Pending lock" : "Pending", href: "/portal/territory", tone: "var(--gold)" },
-        { label: "Territory leads", value: String(LEADS.filter((l) => !["Closed Won", "Closed Lost"].includes(l.stage)).length), href: "/portal/leads", tone: "var(--steel)" },
+        { label: "Territory leads", value: String(activeLeadsCount), href: "/portal/leads", tone: "var(--steel)" },
         { label: "Investor asks", value: String(asks.length), href: "/portal/asks", tone: "var(--red)" },
       ]
     : [

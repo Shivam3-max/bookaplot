@@ -104,16 +104,16 @@ function DealForm({ deal, onCancel }: { deal?: DealRecord; onCancel: () => void 
 export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
   const [q, setQ] = useState("");
   const [creating, setCreating] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const list = deals.filter(
     (d) => d.title.toLowerCase().includes(q.toLowerCase()) || d.cityLabel.toLowerCase().includes(q.toLowerCase())
   );
 
-  const toggleFeatured = (id: string, featured: boolean) => startTransition(() => updateDealQuickFields(id, { featured: !featured }));
-  const setStatus = (id: string, status: string) => startTransition(() => updateDealQuickFields(id, { status }));
-  const remove = (id: string, title: string) => {
+  const toggleFeatured = (id: number, featured: boolean) => startTransition(() => updateDealQuickFields(id, { featured: !featured }));
+  const setStatus = (id: number, status: string) => startTransition(() => updateDealQuickFields(id, { status }));
+  const remove = (id: number, title: string) => {
     if (!confirm(`Delete "${title}"? This can't be undone.`)) return;
     startTransition(() => deleteDeal(id));
   };

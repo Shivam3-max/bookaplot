@@ -49,6 +49,7 @@ export default function ContactPage() {
             <h2 className="font-display text-xl font-black">Send a message</h2>
             <div className="mt-5">
               <LeadForm
+                source="Contact form"
                 fields={[
                   { name: "name", label: "Name", required: true },
                   { name: "phone", label: "Phone", type: "tel", required: true },

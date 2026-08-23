@@ -53,7 +53,7 @@ const loginSchema = z.object({
 async function createAccount(
   data: { name: string; phone: string; password: string; firm?: string; territory?: string; budget?: string; interest?: string | null },
   role: "CP" | "INVESTOR"
-): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: number; role: Role } } | { ok: false; state: FormState }> {
   const passwordHash = await bcrypt.hash(data.password, 10);
   try {
     const user = await createUser({
@@ -79,7 +79,7 @@ async function createAccount(
 
 export async function registerCpFromFormData(
   formData: FormData
-): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: number; role: Role } } | { ok: false; state: FormState }> {
   const parsed = cpSchema.safeParse({
     name: getFormValue(formData, "name"),
     phone: getFormValue(formData, "phone"),
@@ -97,7 +97,7 @@ export async function registerCpFromFormData(
 
 export async function registerInvestorFromFormData(
   formData: FormData
-): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: number; role: Role } } | { ok: false; state: FormState }> {
   const parsed = investorSchema.safeParse({
     name: getFormValue(formData, "name"),
     phone: getFormValue(formData, "phone"),
@@ -115,7 +115,7 @@ export async function registerInvestorFromFormData(
 
 export async function loginFromFormData(
   formData: FormData
-): Promise<{ ok: true; user: { id: string; role: Role } } | { ok: false; state: FormState }> {
+): Promise<{ ok: true; user: { id: number; role: Role } } | { ok: false; state: FormState }> {
   const parsed = loginSchema.safeParse({
     phone: getFormValue(formData, "phone"),
     password: getFormValue(formData, "password"),

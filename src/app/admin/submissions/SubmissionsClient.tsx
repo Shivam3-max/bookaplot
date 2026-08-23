@@ -19,7 +19,7 @@ const LABELS: Record<SellerSubmissionRecord["status"], string> = {
 export default function SubmissionsClient({ submissions }: { submissions: SellerSubmissionRecord[] }) {
   const [isPending, startTransition] = useTransition();
 
-  const set = (id: string, status: SellerSubmissionRecord["status"]) =>
+  const set = (id: number, status: SellerSubmissionRecord["status"]) =>
     startTransition(() => updateSubmissionStatus(id, status));
 
   if (submissions.length === 0) {

@@ -13,7 +13,7 @@ export const COOKIE_NAME = "mondato_session";
 export const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 
 export interface SessionPayload {
-  userId: string;
+  userId: number;
   role: Role;
   expiresAt: number;
   [key: string]: unknown;
@@ -47,7 +47,7 @@ export async function decrypt(token: string | undefined): Promise<SessionPayload
   }
 }
 
-export async function createSession(userId: string, role: Role) {
+export async function createSession(userId: number, role: Role) {
   const expiresAt = Date.now() + SESSION_DURATION_MS;
   const token = await encrypt({ userId, role, expiresAt });
   const cookieStore = await cookies();

@@ -2,12 +2,19 @@
 
 import { useCurrentUser } from "@/context/SessionContext";
 import { TERRITORIES } from "@/lib/network-data";
-import { LEADS } from "@/lib/admin-data";
 import type { DealRecord, LocationRecord } from "@/lib/content-queries";
 import TricityMap from "@/components/TricityMap";
 import Link from "next/link";
 
-export default function TerritoryClient({ deals, locations }: { deals: DealRecord[]; locations: LocationRecord[] }) {
+export default function TerritoryClient({
+  deals,
+  locations,
+  activeLeadsCount,
+}: {
+  deals: DealRecord[];
+  locations: LocationRecord[];
+  activeLeadsCount: number;
+}) {
   const account = useCurrentUser();
   if (!account) return null;
   if (account.role !== "CP")
@@ -20,7 +27,6 @@ export default function TerritoryClient({ deals, locations }: { deals: DealRecor
 
   const mine = account.territory || "Territory pending verification";
   const isLocked = account.status === "TERRITORY_LOCKED";
-  const activeLeads = LEADS.filter((l) => !["Closed Won", "Closed Lost"].includes(l.stage)).slice(0, 4);
 
   return (
     <div className="space-y-6">
@@ -64,7 +70,7 @@ export default function TerritoryClient({ deals, locations }: { deals: DealRecor
                 <p className="text-[11px] font-semibold text-graphite">Network mandates</p>
               </div>
               <div className="rounded-xl bg-paper p-3">
-                <p className="font-display text-xl font-black" style={{ color: "var(--gold)" }}>{activeLeads.length}</p>
+                <p className="font-display text-xl font-black" style={{ color: "var(--gold)" }}>{activeLeadsCount}</p>
                 <p className="text-[11px] font-semibold text-graphite">Active leads</p>
               </div>
               <div className="rounded-xl bg-paper p-3">

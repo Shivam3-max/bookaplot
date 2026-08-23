@@ -18,7 +18,7 @@ export default function AdminAsksClient({ asks }: { asks: AskWithRelations[] }) 
   const open = asks.filter((a) => a.status === "OPEN").length;
   const urgent = asks.filter((a) => a.urgency.startsWith("Urgent")).length;
 
-  const send = (id: string, matched: boolean) => {
+  const send = (id: number, matched: boolean) => {
     const text = drafts[id]?.trim();
     if (!text) return;
     startTransition(async () => {
@@ -54,7 +54,7 @@ export default function AdminAsksClient({ asks }: { asks: AskWithRelations[] }) 
           <div key={a.id} className="card p-5">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
-                <p className="font-display font-black">{a.type} <span className="ml-1 text-[10px] font-bold text-graphite">{a.id.slice(0, 8)}</span></p>
+                <p className="font-display font-black">{a.type} <span className="ml-1 text-[10px] font-bold text-graphite">#{a.id}</span></p>
                 <p className="text-xs text-graphite">{a.investor.name} · {a.createdAt.toLocaleDateString("en-IN")}</p>
               </div>
               <div className="flex items-center gap-2">

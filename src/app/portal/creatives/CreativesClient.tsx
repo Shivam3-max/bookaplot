@@ -14,7 +14,7 @@ export default function CreativesClient({
   requestCount: number;
   creatives: CreativeRecord[];
 }) {
-  const [requested, setRequested] = useState<string | null>(null);
+  const [requested, setRequested] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
   const isCp = account.role === "CP";
 

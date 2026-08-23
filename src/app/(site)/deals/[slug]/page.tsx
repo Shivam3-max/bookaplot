@@ -225,6 +225,7 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
             <div className="mt-4">
               <LeadForm
                 compact
+                source={`Deal page — ${deal.title}`}
                 fields={[
                   { name: "name", label: "Name", required: true, placeholder: "Your name" },
                   { name: "phone", label: "Phone", type: "tel", required: true, placeholder: "+91" },

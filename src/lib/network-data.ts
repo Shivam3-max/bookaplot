@@ -19,7 +19,6 @@ export const TERRITORIES = [
 ];
 
 export interface Creative {
-  id: string;
   title: string;
   type: "Reel / Video" | "Brochure" | "WhatsApp Creative" | "Walkthrough" | "Banner Set";
   deal: string;

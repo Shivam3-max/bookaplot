@@ -36,7 +36,7 @@ export async function createPost(formData: FormData) {
   return { ok: true };
 }
 
-export async function updatePost(id: string, formData: FormData) {
+export async function updatePost(id: number, formData: FormData) {
   await requireAdmin();
   const data = postDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
@@ -45,13 +45,14 @@ export async function updatePost(id: string, formData: FormData) {
   return { ok: true };
 }
 
-export async function deletePost(id: string) {
+// Soft delete: keeps the row (deletedAt set) instead of removing it.
+export async function deletePost(id: number) {
   await requireAdmin();
-  const post = await prisma.post.delete({ where: { id } });
+  const post = await prisma.post.update({ where: { id }, data: { deletedAt: new Date() } });
   revalidatePostPaths(post.slug);
 }
 
-export async function togglePostPublished(id: string, published: boolean) {
+export async function togglePostPublished(id: number, published: boolean) {
   await requireAdmin();
   const post = await prisma.post.update({ where: { id }, data: { published } });
   revalidatePostPaths(post.slug);

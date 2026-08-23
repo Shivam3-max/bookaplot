@@ -4,7 +4,7 @@ export type AskStatus = "OPEN" | "PLATFORM_REVERTED" | "MATCHED";
 export type SubmissionStatus = "PENDING_REVIEW" | "APPROVED" | "REJECTED";
 
 export interface PublicUser {
-  id: string;
+  id: number;
   role: Role;
   name: string;
   phone: string;
@@ -18,23 +18,23 @@ export interface PublicUser {
 }
 
 export interface AuthUser {
-  id: string;
+  id: number;
   role: Role;
   phone: string;
   passwordHash: string;
 }
 
 export interface AskReplyRecord {
-  id: string;
-  askId: string;
-  authorId: string | null;
+  id: number;
+  askId: number;
+  authorId: number | null;
   text: string;
   createdAt: Date;
 }
 
 export interface AskRecord {
-  id: string;
-  investorId: string;
+  id: number;
+  investorId: number;
   budget: string;
   type: string;
   locations: string;
@@ -50,7 +50,7 @@ export interface AskWithRelations extends AskRecord {
 }
 
 export interface SellerSubmissionRecord {
-  id: string;
+  id: number;
   name: string;
   phone: string;
   propertyDetail: string;

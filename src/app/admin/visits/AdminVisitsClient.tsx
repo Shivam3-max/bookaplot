@@ -20,9 +20,9 @@ const STATUS_VALUE: Record<VisitRecord["status"], "REQUESTED" | "CONFIRMED" | "C
 
 export default function AdminVisitsClient({ visits }: { visits: VisitRecord[] }) {
   const [isPending, startTransition] = useTransition();
-  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [pendingId, setPendingId] = useState<number | null>(null);
 
-  const set = (id: string, status: VisitRecord["status"]) => {
+  const set = (id: number, status: VisitRecord["status"]) => {
     setPendingId(id);
     startTransition(async () => {
       await updateVisitStatus(id, STATUS_VALUE[status]);

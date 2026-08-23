@@ -53,10 +53,10 @@ function PostForm({ post, onCancel }: { post?: PostRecord; onCancel: () => void 
 
 export default function AdminBlogClient({ posts }: { posts: PostRecord[] }) {
   const [creating, setCreating] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const remove = (id: string, title: string) => {
+  const remove = (id: number, title: string) => {
     if (!confirm(`Delete "${title}"? This can't be undone.`)) return;
     startTransition(() => deletePost(id));
   };

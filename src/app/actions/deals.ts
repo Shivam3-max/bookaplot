@@ -104,7 +104,7 @@ export async function createDeal(formData: FormData) {
   return { ok: true };
 }
 
-export async function updateDeal(id: string, formData: FormData) {
+export async function updateDeal(id: number, formData: FormData) {
   await requireAdmin();
   const data = dealDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
@@ -113,19 +113,21 @@ export async function updateDeal(id: string, formData: FormData) {
   return { ok: true };
 }
 
-export async function updateDealQuickFields(id: string, patch: { status?: string; featured?: boolean }) {
+export async function updateDealQuickFields(id: number, patch: { status?: string; featured?: boolean }) {
   await requireAdmin();
   const deal = await prisma.deal.update({ where: { id }, data: patch });
   revalidateDealPaths(deal.slug);
 }
 
-export async function deleteDeal(id: string) {
+// Soft delete: the row stays in the database (marked deletedAt) instead of
+// being removed, so it disappears from every list/query but nothing is lost.
+export async function deleteDeal(id: number) {
   await requireAdmin();
-  const deal = await prisma.deal.delete({ where: { id } });
+  const deal = await prisma.deal.update({ where: { id }, data: { deletedAt: new Date() } });
   revalidateDealPaths(deal.slug);
 }
 
-export async function upsertMandate(dealId: string, formData: FormData) {
+export async function upsertMandate(dealId: number, formData: FormData) {
   await requireAdmin();
   const commission = String(formData.get("commission") ?? "").trim();
   const mandateType = String(formData.get("mandateType") ?? "").trim();
@@ -143,7 +145,7 @@ export async function upsertMandate(dealId: string, formData: FormData) {
   revalidateDealPaths(deal?.slug);
 }
 
-export async function deleteMandate(dealId: string) {
+export async function deleteMandate(dealId: number) {
   await requireAdmin();
   await prisma.mandate.delete({ where: { dealId } }).catch(() => null);
   const deal = await prisma.deal.findUnique({ where: { id: dealId }, select: { slug: true } });

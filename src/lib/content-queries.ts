@@ -8,13 +8,14 @@ type DealRow = Prisma.DealGetPayload<Record<string, never>>;
 type LocationRow = Prisma.LocationZoneGetPayload<Record<string, never>>;
 type PostRow = Prisma.PostGetPayload<Record<string, never>>;
 type TestimonialRow = Prisma.TestimonialGetPayload<Record<string, never>>;
+type LeadRow = Prisma.LeadGetPayload<Record<string, never>>;
 
-export type DealRecord = Deal & { id: string };
-export type LocationRecord = LocationZone & { id: string };
-export type PostRecord = Post & { id: string; published: boolean };
-export type TestimonialRecord = Testimonial & { id: string; order: number };
-export type MandateRecord = MandateInfo & { id: string; dealId: string };
-export type CreativeRecord = Creative & { id: string; dealId: string | null };
+export type DealRecord = Deal & { id: number };
+export type LocationRecord = LocationZone & { id: number };
+export type PostRecord = Post & { id: number; published: boolean };
+export type TestimonialRecord = Testimonial & { id: number; order: number };
+export type MandateRecord = MandateInfo & { id: number; dealId: number };
+export type CreativeRecord = Creative & { id: number; dealId: number | null };
 
 function toDeal(row: DealRow): DealRecord {
   return {
@@ -100,55 +101,55 @@ function toTestimonial(row: TestimonialRow): TestimonialRecord {
 }
 
 export async function listDeals(): Promise<DealRecord[]> {
-  const rows = await prisma.deal.findMany({ orderBy: { createdAt: "desc" } });
+  const rows = await prisma.deal.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
   return rows.map(toDeal);
 }
 
 export async function getDeal(slug: string): Promise<DealRecord | undefined> {
-  const row = await prisma.deal.findUnique({ where: { slug } });
+  const row = await prisma.deal.findFirst({ where: { slug, deletedAt: null } });
   return row ? toDeal(row) : undefined;
 }
 
-export async function getDealById(id: string): Promise<DealRecord | undefined> {
-  const row = await prisma.deal.findUnique({ where: { id } });
+export async function getDealById(id: number): Promise<DealRecord | undefined> {
+  const row = await prisma.deal.findFirst({ where: { id, deletedAt: null } });
   return row ? toDeal(row) : undefined;
 }
 
 export async function dealsByCity(city: string): Promise<DealRecord[]> {
-  const rows = await prisma.deal.findMany({ where: { city }, orderBy: { createdAt: "desc" } });
+  const rows = await prisma.deal.findMany({ where: { city, deletedAt: null }, orderBy: { createdAt: "desc" } });
   return rows.map(toDeal);
 }
 
 export async function listLocations(): Promise<LocationRecord[]> {
-  const rows = await prisma.locationZone.findMany({ orderBy: { name: "asc" } });
+  const rows = await prisma.locationZone.findMany({ where: { deletedAt: null }, orderBy: { name: "asc" } });
   return rows.map(toLocation);
 }
 
 export async function getLocation(slug: string): Promise<LocationRecord | undefined> {
-  const row = await prisma.locationZone.findUnique({ where: { slug } });
+  const row = await prisma.locationZone.findFirst({ where: { slug, deletedAt: null } });
   return row ? toLocation(row) : undefined;
 }
 
 export async function listPosts(opts?: { includeUnpublished?: boolean }): Promise<PostRecord[]> {
   const rows = await prisma.post.findMany({
-    where: opts?.includeUnpublished ? undefined : { published: true },
+    where: { deletedAt: null, ...(opts?.includeUnpublished ? {} : { published: true }) },
     orderBy: { date: "desc" },
   });
   return rows.map(toPost);
 }
 
 export async function getPost(slug: string): Promise<PostRecord | undefined> {
-  const row = await prisma.post.findUnique({ where: { slug } });
+  const row = await prisma.post.findFirst({ where: { slug, deletedAt: null } });
   return row ? toPost(row) : undefined;
 }
 
 export async function listTestimonials(): Promise<TestimonialRecord[]> {
-  const rows = await prisma.testimonial.findMany({ orderBy: { order: "asc" } });
+  const rows = await prisma.testimonial.findMany({ where: { deletedAt: null }, orderBy: { order: "asc" } });
   return rows.map(toTestimonial);
 }
 
 export async function listMandates(): Promise<Record<string, MandateRecord>> {
-  const rows = await prisma.mandate.findMany({ include: { deal: { select: { slug: true } } } });
+  const rows = await prisma.mandate.findMany({ where: { deal: { deletedAt: null } }, include: { deal: { select: { slug: true } } } });
   const map: Record<string, MandateRecord> = {};
   for (const r of rows) {
     map[r.deal.slug] = {
@@ -166,7 +167,7 @@ export async function listMandates(): Promise<Record<string, MandateRecord>> {
 }
 
 export interface VisitRecord {
-  id: string;
+  id: number;
   customer: string;
   phone: string;
   deals: string[];
@@ -185,6 +186,7 @@ const VISIT_STATUS_LABEL = {
 
 export async function listVisits(): Promise<VisitRecord[]> {
   const rows = await prisma.visit.findMany({
+    where: { deletedAt: null },
     include: { coordinator: { select: { name: true } } },
     orderBy: { preferredDate: "desc" },
   });
@@ -202,6 +204,7 @@ export async function listVisits(): Promise<VisitRecord[]> {
 
 export async function listCreatives(): Promise<CreativeRecord[]> {
   const rows = await prisma.creative.findMany({
+    where: { deletedAt: null },
     include: { deal: { select: { title: true } } },
     orderBy: { createdAt: "desc" },
   });
@@ -214,4 +217,45 @@ export async function listCreatives(): Promise<CreativeRecord[]> {
     status: r.status as Creative["status"],
     hue: r.hue,
   }));
+}
+
+// --- Leads (real capture from LeadForm's 3 usages: /contact, deal detail "Send Request", /nri) ---
+
+export type LeadStageValue = "NEW" | "CONTACTED" | "FOLLOW_UP" | "VISIT_SCHEDULED" | "HOT" | "NEGOTIATION" | "CLOSED_WON" | "CLOSED_LOST";
+
+export interface LeadRecord {
+  id: number;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  source: string;
+  note: string | null;
+  stage: LeadStageValue;
+  assigneeId: number | null;
+  assigneeName: string | null;
+  createdAt: string;
+}
+
+function toLead(row: LeadRow & { assignee: { name: string } | null }): LeadRecord {
+  return {
+    id: row.id,
+    name: row.name,
+    phone: row.phone,
+    email: row.email,
+    source: row.source,
+    note: row.note,
+    stage: row.stage,
+    assigneeId: row.assigneeId,
+    assigneeName: row.assignee?.name ?? null,
+    createdAt: row.createdAt.toISOString().slice(0, 10),
+  };
+}
+
+export async function listLeads(): Promise<LeadRecord[]> {
+  const rows = await prisma.lead.findMany({
+    where: { deletedAt: null },
+    include: { assignee: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+  return rows.map(toLead);
 }

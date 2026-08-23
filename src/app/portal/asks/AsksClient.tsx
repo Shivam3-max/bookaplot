@@ -78,7 +78,7 @@ export default function AsksClient({ account, asks }: { account: CurrentUser; as
     await postAsk(formData);
     return null;
   }, null);
-  const [pitched, setPitched] = useState<string[]>([]);
+  const [pitched, setPitched] = useState<number[]>([]);
   const isCp = account.role === "CP";
 
   const mine = asks.filter((a) => a.investorId === account.id);

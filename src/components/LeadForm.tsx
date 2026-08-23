@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useTransition } from "react";
+import { createLead } from "@/app/actions/leads";
 
 interface Field {
   name: string;
@@ -16,17 +17,28 @@ export default function LeadForm({
   cta = "Submit",
   success = "Thank you — the team will reach out shortly.",
   compact = false,
+  source,
 }: {
   fields: Field[];
   cta?: string;
   success?: string;
   compact?: boolean;
+  source: string;
 }) {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    setSent(true);
+  const submit = (formData: FormData) => {
+    setError(null);
+    startTransition(async () => {
+      const result = await createLead(formData, source);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+      setSent(true);
+    });
   };
 
   if (sent)
@@ -41,7 +53,7 @@ export default function LeadForm({
     );
 
   return (
-    <form onSubmit={submit} className={`grid gap-4 ${compact ? "" : "sm:grid-cols-2"}`}>
+    <form action={submit} className={`grid gap-4 ${compact ? "" : "sm:grid-cols-2"}`}>
       {fields.map((f) => (
         <div key={f.name} className={f.type === "textarea" ? "sm:col-span-full" : ""}>
           <label className="label" htmlFor={f.name}>
@@ -49,9 +61,9 @@ export default function LeadForm({
             {f.required && <span style={{ color: "var(--gold)" }}> *</span>}
           </label>
           {f.type === "textarea" ? (
-            <textarea id={f.name} className="input min-h-24" placeholder={f.placeholder} required={f.required} />
+            <textarea id={f.name} name={f.name} className="input min-h-24" placeholder={f.placeholder} required={f.required} />
           ) : f.type === "select" ? (
-            <select id={f.name} className="input" required={f.required} defaultValue="">
+            <select id={f.name} name={f.name} className="input" required={f.required} defaultValue="">
               <option value="" disabled>
                 Select…
               </option>
@@ -60,13 +72,14 @@ export default function LeadForm({
               ))}
             </select>
           ) : (
-            <input id={f.name} type={f.type || "text"} className="input" placeholder={f.placeholder} required={f.required} />
+            <input id={f.name} name={f.name} type={f.type || "text"} className="input" placeholder={f.placeholder} required={f.required} />
           )}
         </div>
       ))}
+      {error && <p className="sm:col-span-full text-sm font-semibold text-red">{error}</p>}
       <div className="sm:col-span-full">
-        <button type="submit" className="btn-gold w-full justify-center">
-          {cta}
+        <button type="submit" disabled={isPending} className="btn-gold w-full justify-center disabled:opacity-60">
+          {isPending ? "Sending…" : cta}
         </button>
         <p className="mt-2 text-center text-[11px] text-graphite">
           By submitting, you agree to be contacted by the Mondato team. No spam, ever.

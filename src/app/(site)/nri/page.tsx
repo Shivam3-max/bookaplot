@@ -53,6 +53,7 @@ export default async function NriPage() {
               <div className="mt-4">
                 <LeadForm
                   compact
+                  source="NRI consultation"
                   fields={[
                     { name: "name", label: "Name", required: true },
                     { name: "email", label: "Email", type: "email", required: true },

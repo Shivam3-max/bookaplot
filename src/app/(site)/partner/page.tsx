@@ -50,6 +50,7 @@ export default function PartnerPage() {
               <p className="mt-1 text-xs text-graphite">Tell us who you are and what you hold. The curation desk replies within 2 working days.</p>
               <div className="mt-4">
                 <LeadForm
+                  source="Partner application"
                   fields={[
                     { name: "name", label: "Name", required: true },
                     { name: "company", label: "Company / firm" },

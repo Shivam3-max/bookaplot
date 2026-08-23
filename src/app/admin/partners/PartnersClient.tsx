@@ -19,7 +19,7 @@ export default function PartnersClient({ partners }: { partners: PublicUser[] })
   const list = partners.filter((p) => p.role === tab);
   const takenTerritories = partners.filter((p) => p.status === "TERRITORY_LOCKED" && p.territory).map((p) => p.territory);
 
-  const update = (id: string, status: PartnerStatus, territory?: string) =>
+  const update = (id: number, status: PartnerStatus, territory?: string) =>
     startTransition(async () => { await setPartnerStatus(id, status, territory); });
 
   return (
@@ -58,7 +58,7 @@ export default function PartnersClient({ partners }: { partners: PublicUser[] })
             {list.map((p) => (
               <tr key={p.id} className="border-b border-line last:border-0 hover:bg-paper/60">
                 <td className="px-5 py-3.5">
-                  <p className="font-bold">{p.name} <span className="ml-1 text-[10px] font-bold text-graphite">{p.id.slice(0, 8)}</span></p>
+                  <p className="font-bold">{p.name} <span className="ml-1 text-[10px] font-bold text-graphite">#{p.id}</span></p>
                   <p className="text-xs text-graphite">{p.firm || "—"} · {p.phone}</p>
                 </td>
                 <td className="px-5 py-3.5">

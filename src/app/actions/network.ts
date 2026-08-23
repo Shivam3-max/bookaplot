@@ -30,7 +30,7 @@ export async function postAsk(formData: FormData) {
   revalidatePath("/portal/asks");
 }
 
-export async function replyToAsk(askId: string, text: string, matched: boolean) {
+export async function replyToAsk(askId: number, text: string, matched: boolean) {
   const admin = await requireAdmin();
   if (!text.trim()) return;
 
@@ -45,7 +45,7 @@ export async function replyToAsk(askId: string, text: string, matched: boolean) 
   revalidatePath("/portal/asks");
 }
 
-export async function setPartnerStatus(userId: string, status: PartnerStatus, territory?: string) {
+export async function setPartnerStatus(userId: number, status: PartnerStatus, territory?: string) {
   await requireAdmin();
   await updatePartnerStatusRecord(userId, status, territory);
   revalidatePath("/admin/partners");
@@ -78,7 +78,7 @@ export async function submitSellerListing(formData: FormData) {
   return { ok: true };
 }
 
-export async function updateSubmissionStatus(id: string, status: SubmissionStatus) {
+export async function updateSubmissionStatus(id: number, status: SubmissionStatus) {
   await requireAdmin();
   await updateSellerSubmissionStatus(id, status);
   revalidatePath("/admin/submissions");
