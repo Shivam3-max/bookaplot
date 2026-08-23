@@ -159,6 +159,9 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
                   <td className="px-5 py-3.5">
                     <p className="font-bold leading-snug">{d.title}</p>
                     <p className="text-xs text-graphite">{d.cityLabel} · {d.type}</p>
+                    <p className="text-[10px] text-graphite/70">
+                      {d.updatedByName ? `Updated by ${d.updatedByName}` : d.createdByName ? `Created by ${d.createdByName}` : "—"}
+                    </p>
                   </td>
                   <td className="px-5 py-3.5 font-bold">{inr(d.price)}</td>
                   <td className="px-5 py-3.5">

@@ -69,6 +69,7 @@ export default function AdminVisitsClient({ visits }: { visits: VisitRecord[] })
                 <td className="px-5 py-3.5">
                   <p className="font-bold">{v.customer}</p>
                   <p className="text-xs text-graphite">{v.phone}</p>
+                  {v.updatedByName && <p className="text-[10px] text-graphite/70">Updated by {v.updatedByName}</p>}
                 </td>
                 <td className="max-w-56 px-5 py-3.5 text-xs font-medium">{v.deals.length > 0 ? v.deals.join(" + ") : "—"}</td>
                 <td className="px-5 py-3.5 font-bold">{new Date(v.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</td>

@@ -86,6 +86,7 @@ function mapPublicUser(row: Record<string, unknown>): PublicUser {
     interest: (row.interest as string | null) ?? null,
     status: row.status as PartnerStatus,
     createdAt: row.createdAt as Date,
+    updatedByName: (row.updatedByName as string | null) ?? null,
   };
 }
 
@@ -145,8 +146,11 @@ export async function findAuthUserByPhone(phone: string) {
 
 export async function listPartners() {
   const rows = await execute<Record<string, unknown>>(
-    `SELECT id, role, name, phone, email, firm, territory, budget, interest, status, createdAt
-     FROM users WHERE role IN ('CP', 'INVESTOR') AND deletedAt IS NULL ORDER BY createdAt DESC`
+    `SELECT u.id, u.role, u.name, u.phone, u.email, u.firm, u.territory, u.budget, u.interest, u.status, u.createdAt,
+            ub.name AS updatedByName
+     FROM users u
+     LEFT JOIN users ub ON ub.id = u.updatedById
+     WHERE u.role IN ('CP', 'INVESTOR') AND u.deletedAt IS NULL ORDER BY u.createdAt DESC`
   );
   return rows.map(mapPublicUser);
 }
@@ -289,17 +293,17 @@ export async function replyToAskRecord(input: {
   ]);
 }
 
-export async function updatePartnerStatus(userId: number, status: PartnerStatus, territory?: string) {
+export async function updatePartnerStatus(userId: number, status: PartnerStatus, territory: string | undefined, updatedById: number) {
   if (territory !== undefined) {
     await run({
-      sql: `UPDATE users SET status = ?, territory = ? WHERE id = ?`,
-      args: [status, territory || null, userId],
+      sql: `UPDATE users SET status = ?, territory = ?, updatedById = ? WHERE id = ?`,
+      args: [status, territory || null, updatedById, userId],
     });
     return;
   }
   await run({
-    sql: `UPDATE users SET status = ? WHERE id = ?`,
-    args: [status, userId],
+    sql: `UPDATE users SET status = ?, updatedById = ? WHERE id = ?`,
+    args: [status, updatedById, userId],
   });
 }
 
@@ -333,8 +337,10 @@ export async function createSellerSubmission(input: {
 
 export async function listSellerSubmissions(): Promise<SellerSubmissionRecord[]> {
   const rows = await execute<Record<string, unknown>>(
-    `SELECT id, name, phone, propertyDetail, expectedPrice, status, createdAt
-     FROM seller_submissions WHERE deletedAt IS NULL ORDER BY createdAt DESC`
+    `SELECT s.id, s.name, s.phone, s.propertyDetail, s.expectedPrice, s.status, s.createdAt, u.name AS updatedByName
+     FROM seller_submissions s
+     LEFT JOIN users u ON u.id = s.updatedById
+     WHERE s.deletedAt IS NULL ORDER BY s.createdAt DESC`
   );
   return rows.map((row) => ({
     id: Number(row.id),
@@ -344,6 +350,7 @@ export async function listSellerSubmissions(): Promise<SellerSubmissionRecord[]>
     expectedPrice: (row.expectedPrice as string | null) ?? null,
     status: row.status as SubmissionStatus,
     createdAt: row.createdAt as Date,
+    updatedByName: (row.updatedByName as string | null) ?? null,
   }));
 }
 
@@ -361,9 +368,9 @@ export async function countSellerSubmissions(status?: SubmissionStatus) {
   return Number(rows[0]?.count ?? 0);
 }
 
-export async function updateSellerSubmissionStatus(id: number, status: SubmissionStatus) {
+export async function updateSellerSubmissionStatus(id: number, status: SubmissionStatus, updatedById: number) {
   await run({
-    sql: `UPDATE seller_submissions SET status = ? WHERE id = ?`,
-    args: [status, id],
+    sql: `UPDATE seller_submissions SET status = ?, updatedById = ? WHERE id = ?`,
+    args: [status, updatedById, id],
   });
 }

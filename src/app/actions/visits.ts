@@ -32,14 +32,14 @@ export async function createVisit(formData: FormData) {
 }
 
 export async function updateVisitStatus(id: number, status: "REQUESTED" | "CONFIRMED" | "COMPLETED" | "CANCELLED") {
-  await requireAdmin();
-  await prisma.visit.update({ where: { id }, data: { status } });
+  const admin = await requireAdmin();
+  await prisma.visit.update({ where: { id }, data: { status, updatedById: admin.id } });
   revalidatePath("/admin/visits");
   revalidatePath("/admin");
 }
 
 export async function setVisitFeedback(id: number, feedback: string) {
-  await requireAdmin();
-  await prisma.visit.update({ where: { id }, data: { feedback: feedback.trim() || null } });
+  const admin = await requireAdmin();
+  await prisma.visit.update({ where: { id }, data: { feedback: feedback.trim() || null, updatedById: admin.id } });
   revalidatePath("/admin/visits");
 }

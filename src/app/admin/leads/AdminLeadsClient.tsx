@@ -59,6 +59,7 @@ export default function AdminLeadsClient({ leads }: { leads: LeadRecord[] }) {
               <span className={`chip ${stageTone(l.stage)}`}>{STAGE_LABEL[l.stage]}</span>
             </div>
             <p className="mt-2 text-xs font-semibold text-graphite">Source: {l.source}</p>
+            {l.updatedByName && <p className="text-[10px] text-graphite/70">Updated by {l.updatedByName}</p>}
             {l.note && <p className="mt-2.5 rounded-lg bg-gold-soft px-3 py-2 text-xs font-medium text-[#6b5426] whitespace-pre-line">{l.note}</p>}
             <div className="mt-3 flex items-center gap-2">
               <span className="ml-auto text-xs text-graphite">{l.assigneeName ? `Assigned: ${l.assigneeName}` : "Unassigned"}</span>

@@ -41,6 +41,7 @@ export default function SubmissionsClient({ submissions }: { submissions: Seller
             <div><p className="text-[9px] font-bold uppercase tracking-wider text-graphite">Property detail</p><p className="mt-0.5 font-semibold">{s.propertyDetail}</p></div>
             <div><p className="text-[9px] font-bold uppercase tracking-wider text-graphite">Expected price</p><p className="mt-0.5 font-semibold">{s.expectedPrice || "—"}</p></div>
           </div>
+          {s.updatedByName && <p className="mt-2 text-[10px] text-graphite/70">Updated by {s.updatedByName}</p>}
           <div className="mt-3.5 flex flex-wrap gap-2">
             <button disabled={isPending} onClick={() => set(s.id, "APPROVED")} className="btn !bg-green !px-4 !py-1.5 !text-xs text-white disabled:opacity-60">Approve</button>
             <button disabled={isPending} onClick={() => set(s.id, "REJECTED")} className="btn-ghost !px-4 !py-1.5 !text-xs !text-graphite disabled:opacity-60">Reject</button>

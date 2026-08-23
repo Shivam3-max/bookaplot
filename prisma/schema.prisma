@@ -62,12 +62,38 @@ model User {
   status       PartnerStatus @default(PENDING)
   createdAt    DateTime      @default(now())
   deletedAt    DateTime?
+  updatedById  Int? // which admin last changed this account's status/territory
+  updatedBy    User?         @relation("UserUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   asks              Ask[]             @relation("InvestorAsks")
   askReplies        AskReply[]
   creativeRequests  CreativeRequest[]
   coordinatedVisits Visit[]           @relation("VisitCoordinator")
   assignedLeads     Lead[]            @relation("LeadAssignee")
+  updatedUsers      User[]            @relation("UserUpdatedBy")
+
+  // Audit-trail back-relations - who created/updated/deleted each row.
+  createdDeals             Deal[]             @relation("DealCreatedBy")
+  updatedDeals             Deal[]             @relation("DealUpdatedBy")
+  deletedDeals             Deal[]             @relation("DealDeletedBy")
+  createdMandates          Mandate[]          @relation("MandateCreatedBy")
+  updatedMandates          Mandate[]          @relation("MandateUpdatedBy")
+  createdLocationZones     LocationZone[]     @relation("LocationZoneCreatedBy")
+  updatedLocationZones     LocationZone[]     @relation("LocationZoneUpdatedBy")
+  deletedLocationZones     LocationZone[]     @relation("LocationZoneDeletedBy")
+  createdPosts             Post[]             @relation("PostCreatedBy")
+  updatedPosts             Post[]             @relation("PostUpdatedBy")
+  deletedPosts             Post[]             @relation("PostDeletedBy")
+  createdTestimonials      Testimonial[]      @relation("TestimonialCreatedBy")
+  deletedTestimonials      Testimonial[]      @relation("TestimonialDeletedBy")
+  createdCreatives         Creative[]         @relation("CreativeCreatedBy")
+  deletedCreatives         Creative[]         @relation("CreativeDeletedBy")
+  updatedVisits            Visit[]            @relation("VisitUpdatedBy")
+  deletedVisits            Visit[]            @relation("VisitDeletedBy")
+  updatedSellerSubmissions SellerSubmission[] @relation("SellerSubmissionUpdatedBy")
+  deletedSellerSubmissions SellerSubmission[] @relation("SellerSubmissionDeletedBy")
+  updatedLeads             Lead[]             @relation("LeadUpdatedBy")
+  deletedLeads             Lead[]             @relation("LeadDeletedBy")
 
   @@map("users")
 }
@@ -123,22 +149,30 @@ model SellerSubmission {
   status         SubmissionStatus @default(PENDING_REVIEW)
   createdAt      DateTime         @default(now())
   deletedAt      DateTime?
+  updatedById    Int?
+  updatedBy      User?            @relation("SellerSubmissionUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedById    Int?
+  deletedBy      User?            @relation("SellerSubmissionDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@map("seller_submissions")
 }
 
 model Lead {
-  id         Int       @id @default(autoincrement())
-  name       String
-  phone      String?
-  email      String?
-  source     String
-  note       String?   @db.Text
-  stage      LeadStage @default(NEW)
-  assignee   User?     @relation("LeadAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  assigneeId Int?
-  createdAt  DateTime  @default(now())
-  deletedAt  DateTime?
+  id          Int       @id @default(autoincrement())
+  name        String
+  phone       String?
+  email       String?
+  source      String
+  note        String?   @db.Text
+  stage       LeadStage @default(NEW)
+  assignee    User?     @relation("LeadAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  assigneeId  Int?
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  updatedById Int?
+  updatedBy   User?     @relation("LeadUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+  deletedBy   User?     @relation("LeadDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@index([assigneeId])
   @@map("leads")
@@ -149,6 +183,9 @@ model Lead {
 // creative type/status) are kept as plain strings rather than enums so
 // admins can introduce a new category from the CRUD UI without a schema
 // migration.
+//
+// createdBy/updatedBy/deletedBy track which admin performed each action,
+// alongside the existing createdAt/updatedAt/deletedAt timestamps.
 
 model Deal {
   id                 Int       @id @default(autoincrement())
@@ -193,6 +230,12 @@ model Deal {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   deletedAt          DateTime?
+  createdById        Int?
+  createdBy          User?     @relation("DealCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById        Int?
+  updatedBy          User?     @relation("DealUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedById        Int?
+  deletedBy          User?     @relation("DealDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   mandate   Mandate?
   creatives Creative[]
@@ -212,6 +255,10 @@ model Mandate {
   kit          Json // string[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  createdById  Int?
+  createdBy    User?    @relation("MandateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById  Int?
+  updatedBy    User?    @relation("MandateUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@map("mandates")
 }
@@ -236,49 +283,69 @@ model LocationZone {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
+  createdById  Int?
+  createdBy    User?     @relation("LocationZoneCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById  Int?
+  updatedBy    User?     @relation("LocationZoneUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedById  Int?
+  deletedBy    User?     @relation("LocationZoneDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@map("location_zones")
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
-  slug      String    @unique
-  title     String
-  category  String
-  excerpt   String    @db.Text
-  date      DateTime
-  readMins  Int
-  body      Json // string[] of paragraphs
-  published Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String
+  category    String
+  excerpt     String    @db.Text
+  date        DateTime
+  readMins    Int
+  body        Json // string[] of paragraphs
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdById Int?
+  createdBy   User?     @relation("PostCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById Int?
+  updatedBy   User?     @relation("PostUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+  deletedBy   User?     @relation("PostDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@map("posts")
 }
 
 model Testimonial {
-  id        Int       @id @default(autoincrement())
-  quote     String    @db.Text
-  name      String
-  context   String
-  order     Int       @default(0)
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
+  id          Int       @id @default(autoincrement())
+  quote       String    @db.Text
+  name        String
+  context     String
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  createdById Int?
+  createdBy   User?     @relation("TestimonialCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  deletedById Int?
+  deletedBy   User?     @relation("TestimonialDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@map("testimonials")
 }
 
 model Creative {
-  id        Int       @id @default(autoincrement())
-  title     String
-  type      String
-  deal      Deal?     @relation(fields: [dealId], references: [id], onDelete: SetNull)
-  dealId    Int?
-  status    String
-  hue       Int
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
+  id          Int       @id @default(autoincrement())
+  title       String
+  type        String
+  deal        Deal?     @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  dealId      Int?
+  status      String
+  hue         Int
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  createdById Int?
+  createdBy   User?     @relation("CreativeCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  deletedById Int?
+  deletedBy   User?     @relation("CreativeDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@index([dealId])
   @@map("creatives")
@@ -296,6 +363,10 @@ model Visit {
   feedback      String?     @db.Text
   createdAt     DateTime    @default(now())
   deletedAt     DateTime?
+  updatedById   Int?
+  updatedBy     User?       @relation("VisitUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedById   Int?
+  deletedBy     User?       @relation("VisitDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
 
   @@index([coordinatorId])
   @@map("visits")

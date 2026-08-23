@@ -90,7 +90,12 @@ export default function AdminBlogClient({ posts }: { posts: PostRecord[] }) {
             {posts.map((p) => (
               <Fragment key={p.id}>
                 <tr className="border-b border-line last:border-0 hover:bg-paper/60">
-                  <td className="max-w-72 px-5 py-3.5 font-bold leading-snug">{p.title}</td>
+                  <td className="max-w-72 px-5 py-3.5">
+                    <p className="font-bold leading-snug">{p.title}</p>
+                    <p className="text-[10px] text-graphite/70">
+                      {p.updatedByName ? `Updated by ${p.updatedByName}` : p.createdByName ? `Created by ${p.createdByName}` : "—"}
+                    </p>
+                  </td>
                   <td className="px-5 py-3.5"><span className="chip badge-steel">{p.category}</span></td>
                   <td className="px-5 py-3.5 text-xs font-semibold text-graphite">{p.date}</td>
                   <td className="px-5 py-3.5">

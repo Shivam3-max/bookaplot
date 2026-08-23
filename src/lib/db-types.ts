@@ -15,6 +15,7 @@ export interface PublicUser {
   interest: string | null;
   status: PartnerStatus;
   createdAt: Date;
+  updatedByName: string | null;
 }
 
 export interface AuthUser {
@@ -57,4 +58,5 @@ export interface SellerSubmissionRecord {
   expectedPrice: string | null;
   status: SubmissionStatus;
   createdAt: Date;
+  updatedByName: string | null;
 }

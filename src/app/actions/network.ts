@@ -46,8 +46,8 @@ export async function replyToAsk(askId: number, text: string, matched: boolean) 
 }
 
 export async function setPartnerStatus(userId: number, status: PartnerStatus, territory?: string) {
-  await requireAdmin();
-  await updatePartnerStatusRecord(userId, status, territory);
+  const admin = await requireAdmin();
+  await updatePartnerStatusRecord(userId, status, territory, admin.id);
   revalidatePath("/admin/partners");
 }
 
@@ -79,8 +79,8 @@ export async function submitSellerListing(formData: FormData) {
 }
 
 export async function updateSubmissionStatus(id: number, status: SubmissionStatus) {
-  await requireAdmin();
-  await updateSellerSubmissionStatus(id, status);
+  const admin = await requireAdmin();
+  await updateSellerSubmissionStatus(id, status, admin.id);
   revalidatePath("/admin/submissions");
   revalidatePath("/admin");
 }

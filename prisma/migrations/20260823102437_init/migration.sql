@@ -13,6 +13,7 @@ CREATE TABLE `users` (
     `status` ENUM('PENDING', 'VERIFIED', 'TERRITORY_LOCKED') NOT NULL DEFAULT 'PENDING',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
+    `updatedById` INTEGER NULL,
 
     UNIQUE INDEX `users_phone_key`(`phone`),
     UNIQUE INDEX `users_email_key`(`email`),
@@ -69,6 +70,8 @@ CREATE TABLE `seller_submissions` (
     `status` ENUM('PENDING_REVIEW', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING_REVIEW',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
+    `updatedById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -85,6 +88,8 @@ CREATE TABLE `leads` (
     `assigneeId` INTEGER NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
+    `updatedById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     INDEX `leads_assigneeId_idx`(`assigneeId`),
     PRIMARY KEY (`id`)
@@ -134,6 +139,9 @@ CREATE TABLE `deals` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
+    `createdById` INTEGER NULL,
+    `updatedById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     UNIQUE INDEX `deals_slug_key`(`slug`),
     PRIMARY KEY (`id`)
@@ -151,6 +159,8 @@ CREATE TABLE `mandates` (
     `kit` JSON NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
+    `createdById` INTEGER NULL,
+    `updatedById` INTEGER NULL,
 
     UNIQUE INDEX `mandates_dealId_key`(`dealId`),
     PRIMARY KEY (`id`)
@@ -177,6 +187,9 @@ CREATE TABLE `location_zones` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
+    `createdById` INTEGER NULL,
+    `updatedById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     UNIQUE INDEX `location_zones_slug_key`(`slug`),
     PRIMARY KEY (`id`)
@@ -196,6 +209,9 @@ CREATE TABLE `posts` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
+    `createdById` INTEGER NULL,
+    `updatedById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     UNIQUE INDEX `posts_slug_key`(`slug`),
     PRIMARY KEY (`id`)
@@ -210,6 +226,8 @@ CREATE TABLE `testimonials` (
     `order` INTEGER NOT NULL DEFAULT 0,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
+    `createdById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -224,6 +242,8 @@ CREATE TABLE `creatives` (
     `hue` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
+    `createdById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     INDEX `creatives_dealId_idx`(`dealId`),
     PRIMARY KEY (`id`)
@@ -241,10 +261,15 @@ CREATE TABLE `visits` (
     `feedback` TEXT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
+    `updatedById` INTEGER NULL,
+    `deletedById` INTEGER NULL,
 
     INDEX `visits_coordinatorId_idx`(`coordinatorId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `users` ADD CONSTRAINT `users_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `asks` ADD CONSTRAINT `asks_investorId_fkey` FOREIGN KEY (`investorId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -259,14 +284,77 @@ ALTER TABLE `ask_replies` ADD CONSTRAINT `ask_replies_authorId_fkey` FOREIGN KEY
 ALTER TABLE `creative_requests` ADD CONSTRAINT `creative_requests_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `seller_submissions` ADD CONSTRAINT `seller_submissions_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `seller_submissions` ADD CONSTRAINT `seller_submissions_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `leads` ADD CONSTRAINT `leads_assigneeId_fkey` FOREIGN KEY (`assigneeId`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `leads` ADD CONSTRAINT `leads_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `leads` ADD CONSTRAINT `leads_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `deals` ADD CONSTRAINT `deals_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `deals` ADD CONSTRAINT `deals_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `deals` ADD CONSTRAINT `deals_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `mandates` ADD CONSTRAINT `mandates_dealId_fkey` FOREIGN KEY (`dealId`) REFERENCES `deals`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `mandates` ADD CONSTRAINT `mandates_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `mandates` ADD CONSTRAINT `mandates_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `location_zones` ADD CONSTRAINT `location_zones_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `location_zones` ADD CONSTRAINT `location_zones_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `location_zones` ADD CONSTRAINT `location_zones_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `posts` ADD CONSTRAINT `posts_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `posts` ADD CONSTRAINT `posts_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `posts` ADD CONSTRAINT `posts_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `testimonials` ADD CONSTRAINT `testimonials_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `testimonials` ADD CONSTRAINT `testimonials_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `creatives` ADD CONSTRAINT `creatives_dealId_fkey` FOREIGN KEY (`dealId`) REFERENCES `deals`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `creatives` ADD CONSTRAINT `creatives_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `creatives` ADD CONSTRAINT `creatives_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `visits` ADD CONSTRAINT `visits_coordinatorId_fkey` FOREIGN KEY (`coordinatorId`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `visits` ADD CONSTRAINT `visits_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `visits` ADD CONSTRAINT `visits_deletedById_fkey` FOREIGN KEY (`deletedById`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 

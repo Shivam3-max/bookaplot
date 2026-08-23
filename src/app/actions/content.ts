@@ -28,32 +28,32 @@ function postDataFromForm(formData: FormData) {
 }
 
 export async function createPost(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const data = postDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
-  await prisma.post.create({ data });
+  await prisma.post.create({ data: { ...data, createdById: admin.id } });
   revalidatePostPaths(data.slug);
   return { ok: true };
 }
 
 export async function updatePost(id: number, formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const data = postDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
-  await prisma.post.update({ where: { id }, data });
+  await prisma.post.update({ where: { id }, data: { ...data, updatedById: admin.id } });
   revalidatePostPaths(data.slug);
   return { ok: true };
 }
 
 // Soft delete: keeps the row (deletedAt set) instead of removing it.
 export async function deletePost(id: number) {
-  await requireAdmin();
-  const post = await prisma.post.update({ where: { id }, data: { deletedAt: new Date() } });
+  const admin = await requireAdmin();
+  const post = await prisma.post.update({ where: { id }, data: { deletedAt: new Date(), deletedById: admin.id } });
   revalidatePostPaths(post.slug);
 }
 
 export async function togglePostPublished(id: number, published: boolean) {
-  await requireAdmin();
-  const post = await prisma.post.update({ where: { id }, data: { published } });
+  const admin = await requireAdmin();
+  const post = await prisma.post.update({ where: { id }, data: { published, updatedById: admin.id } });
   revalidatePostPaths(post.slug);
 }

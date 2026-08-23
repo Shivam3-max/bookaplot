@@ -4,15 +4,30 @@ import type { Deal, LocationZone, Post, Testimonial } from "@/lib/types";
 import type { MandateInfo, Creative } from "@/lib/network-data";
 import type { Prisma } from "@prisma/client";
 
-type DealRow = Prisma.DealGetPayload<Record<string, never>>;
+const AUDIT_INCLUDE = {
+  createdBy: { select: { name: true } },
+  updatedBy: { select: { name: true } },
+  deletedBy: { select: { name: true } },
+} as const;
+
+type DealRow = Prisma.DealGetPayload<{ include: typeof AUDIT_INCLUDE }>;
 type LocationRow = Prisma.LocationZoneGetPayload<Record<string, never>>;
-type PostRow = Prisma.PostGetPayload<Record<string, never>>;
+type PostRow = Prisma.PostGetPayload<{ include: typeof AUDIT_INCLUDE }>;
 type TestimonialRow = Prisma.TestimonialGetPayload<Record<string, never>>;
 type LeadRow = Prisma.LeadGetPayload<Record<string, never>>;
 
-export type DealRecord = Deal & { id: number };
+interface AuditFields {
+  createdById: number | null;
+  createdByName: string | null;
+  updatedById: number | null;
+  updatedByName: string | null;
+  deletedById: number | null;
+  deletedByName: string | null;
+}
+
+export type DealRecord = Deal & { id: number } & AuditFields;
 export type LocationRecord = LocationZone & { id: number };
-export type PostRecord = Post & { id: number; published: boolean };
+export type PostRecord = Post & { id: number; published: boolean } & AuditFields;
 export type TestimonialRecord = Testimonial & { id: number; order: number };
 export type MandateRecord = MandateInfo & { id: number; dealId: number };
 export type CreativeRecord = Creative & { id: number; dealId: number | null };
@@ -20,6 +35,12 @@ export type CreativeRecord = Creative & { id: number; dealId: number | null };
 function toDeal(row: DealRow): DealRecord {
   return {
     id: row.id,
+    createdById: row.createdById,
+    createdByName: row.createdBy?.name ?? null,
+    updatedById: row.updatedById,
+    updatedByName: row.updatedBy?.name ?? null,
+    deletedById: row.deletedById,
+    deletedByName: row.deletedBy?.name ?? null,
     slug: row.slug,
     title: row.title,
     subtitle: row.subtitle,
@@ -85,6 +106,12 @@ function toLocation(row: LocationRow): LocationRecord {
 function toPost(row: PostRow): PostRecord {
   return {
     id: row.id,
+    createdById: row.createdById,
+    createdByName: row.createdBy?.name ?? null,
+    updatedById: row.updatedById,
+    updatedByName: row.updatedBy?.name ?? null,
+    deletedById: row.deletedById,
+    deletedByName: row.deletedBy?.name ?? null,
     slug: row.slug,
     title: row.title,
     category: row.category,
@@ -101,22 +128,22 @@ function toTestimonial(row: TestimonialRow): TestimonialRecord {
 }
 
 export async function listDeals(): Promise<DealRecord[]> {
-  const rows = await prisma.deal.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
+  const rows = await prisma.deal.findMany({ where: { deletedAt: null }, include: AUDIT_INCLUDE, orderBy: { createdAt: "desc" } });
   return rows.map(toDeal);
 }
 
 export async function getDeal(slug: string): Promise<DealRecord | undefined> {
-  const row = await prisma.deal.findFirst({ where: { slug, deletedAt: null } });
+  const row = await prisma.deal.findFirst({ where: { slug, deletedAt: null }, include: AUDIT_INCLUDE });
   return row ? toDeal(row) : undefined;
 }
 
 export async function getDealById(id: number): Promise<DealRecord | undefined> {
-  const row = await prisma.deal.findFirst({ where: { id, deletedAt: null } });
+  const row = await prisma.deal.findFirst({ where: { id, deletedAt: null }, include: AUDIT_INCLUDE });
   return row ? toDeal(row) : undefined;
 }
 
 export async function dealsByCity(city: string): Promise<DealRecord[]> {
-  const rows = await prisma.deal.findMany({ where: { city, deletedAt: null }, orderBy: { createdAt: "desc" } });
+  const rows = await prisma.deal.findMany({ where: { city, deletedAt: null }, include: AUDIT_INCLUDE, orderBy: { createdAt: "desc" } });
   return rows.map(toDeal);
 }
 
@@ -133,13 +160,14 @@ export async function getLocation(slug: string): Promise<LocationRecord | undefi
 export async function listPosts(opts?: { includeUnpublished?: boolean }): Promise<PostRecord[]> {
   const rows = await prisma.post.findMany({
     where: { deletedAt: null, ...(opts?.includeUnpublished ? {} : { published: true }) },
+    include: AUDIT_INCLUDE,
     orderBy: { date: "desc" },
   });
   return rows.map(toPost);
 }
 
 export async function getPost(slug: string): Promise<PostRecord | undefined> {
-  const row = await prisma.post.findFirst({ where: { slug, deletedAt: null } });
+  const row = await prisma.post.findFirst({ where: { slug, deletedAt: null }, include: AUDIT_INCLUDE });
   return row ? toPost(row) : undefined;
 }
 
@@ -175,6 +203,7 @@ export interface VisitRecord {
   status: "Requested" | "Confirmed" | "Completed" | "Cancelled";
   coordinator: string;
   feedback?: string;
+  updatedByName: string | null;
 }
 
 const VISIT_STATUS_LABEL = {
@@ -187,7 +216,7 @@ const VISIT_STATUS_LABEL = {
 export async function listVisits(): Promise<VisitRecord[]> {
   const rows = await prisma.visit.findMany({
     where: { deletedAt: null },
-    include: { coordinator: { select: { name: true } } },
+    include: { coordinator: { select: { name: true } }, updatedBy: { select: { name: true } } },
     orderBy: { preferredDate: "desc" },
   });
   return rows.map((r) => ({
@@ -199,6 +228,7 @@ export async function listVisits(): Promise<VisitRecord[]> {
     status: VISIT_STATUS_LABEL[r.status],
     coordinator: r.coordinator?.name ?? "—",
     feedback: r.feedback ?? undefined,
+    updatedByName: r.updatedBy?.name ?? null,
   }));
 }
 
@@ -233,10 +263,11 @@ export interface LeadRecord {
   stage: LeadStageValue;
   assigneeId: number | null;
   assigneeName: string | null;
+  updatedByName: string | null;
   createdAt: string;
 }
 
-function toLead(row: LeadRow & { assignee: { name: string } | null }): LeadRecord {
+function toLead(row: LeadRow & { assignee: { name: string } | null; updatedBy: { name: string } | null }): LeadRecord {
   return {
     id: row.id,
     name: row.name,
@@ -247,6 +278,7 @@ function toLead(row: LeadRow & { assignee: { name: string } | null }): LeadRecor
     stage: row.stage,
     assigneeId: row.assigneeId,
     assigneeName: row.assignee?.name ?? null,
+    updatedByName: row.updatedBy?.name ?? null,
     createdAt: row.createdAt.toISOString().slice(0, 10),
   };
 }
@@ -254,7 +286,7 @@ function toLead(row: LeadRow & { assignee: { name: string } | null }): LeadRecor
 export async function listLeads(): Promise<LeadRecord[]> {
   const rows = await prisma.lead.findMany({
     where: { deletedAt: null },
-    include: { assignee: { select: { name: true } } },
+    include: { assignee: { select: { name: true } }, updatedBy: { select: { name: true } } },
     orderBy: { createdAt: "desc" },
   });
   return rows.map(toLead);

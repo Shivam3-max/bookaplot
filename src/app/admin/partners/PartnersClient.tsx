@@ -60,6 +60,7 @@ export default function PartnersClient({ partners }: { partners: PublicUser[] })
                 <td className="px-5 py-3.5">
                   <p className="font-bold">{p.name} <span className="ml-1 text-[10px] font-bold text-graphite">#{p.id}</span></p>
                   <p className="text-xs text-graphite">{p.firm || "—"} · {p.phone}</p>
+                  {p.updatedByName && <p className="text-[10px] text-graphite/70">Updated by {p.updatedByName}</p>}
                 </td>
                 <td className="px-5 py-3.5">
                   {tab === "CP" ? (

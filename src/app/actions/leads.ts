@@ -48,8 +48,8 @@ export async function createLead(formData: FormData, source: string) {
 }
 
 export async function updateLeadStageAdmin(id: number, stage: LeadStageValue) {
-  await requireAdmin();
-  await prisma.lead.update({ where: { id }, data: { stage } });
+  const admin = await requireAdmin();
+  await prisma.lead.update({ where: { id }, data: { stage, updatedById: admin.id } });
   revalidateLeadPaths();
 }
 
@@ -59,6 +59,6 @@ export async function updateLeadStageAdmin(id: number, stage: LeadStageValue) {
 export async function updateLeadStagePartner(id: number, stage: LeadStageValue) {
   const user = await requirePartner();
   if (user.role !== "CP") return;
-  await prisma.lead.update({ where: { id }, data: { stage } });
+  await prisma.lead.update({ where: { id }, data: { stage, updatedById: user.id } });
   revalidateLeadPaths();
 }

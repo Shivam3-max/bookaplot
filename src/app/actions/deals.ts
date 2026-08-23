@@ -96,39 +96,39 @@ function dealDataFromForm(formData: FormData) {
 }
 
 export async function createDeal(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const data = dealDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
-  await prisma.deal.create({ data });
+  await prisma.deal.create({ data: { ...data, createdById: admin.id } });
   revalidateDealPaths(data.slug);
   return { ok: true };
 }
 
 export async function updateDeal(id: number, formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const data = dealDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
-  await prisma.deal.update({ where: { id }, data });
+  await prisma.deal.update({ where: { id }, data: { ...data, updatedById: admin.id } });
   revalidateDealPaths(data.slug);
   return { ok: true };
 }
 
 export async function updateDealQuickFields(id: number, patch: { status?: string; featured?: boolean }) {
-  await requireAdmin();
-  const deal = await prisma.deal.update({ where: { id }, data: patch });
+  const admin = await requireAdmin();
+  const deal = await prisma.deal.update({ where: { id }, data: { ...patch, updatedById: admin.id } });
   revalidateDealPaths(deal.slug);
 }
 
 // Soft delete: the row stays in the database (marked deletedAt) instead of
 // being removed, so it disappears from every list/query but nothing is lost.
 export async function deleteDeal(id: number) {
-  await requireAdmin();
-  const deal = await prisma.deal.update({ where: { id }, data: { deletedAt: new Date() } });
+  const admin = await requireAdmin();
+  const deal = await prisma.deal.update({ where: { id }, data: { deletedAt: new Date(), deletedById: admin.id } });
   revalidateDealPaths(deal.slug);
 }
 
 export async function upsertMandate(dealId: number, formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const commission = String(formData.get("commission") ?? "").trim();
   const mandateType = String(formData.get("mandateType") ?? "").trim();
   const validity = String(formData.get("validity") ?? "").trim();
@@ -138,8 +138,8 @@ export async function upsertMandate(dealId: number, formData: FormData) {
 
   await prisma.mandate.upsert({
     where: { dealId },
-    create: { dealId, commission, mandateType, validity, investorNote, urgent, kit },
-    update: { commission, mandateType, validity, investorNote, urgent, kit },
+    create: { dealId, commission, mandateType, validity, investorNote, urgent, kit, createdById: admin.id },
+    update: { commission, mandateType, validity, investorNote, urgent, kit, updatedById: admin.id },
   });
   const deal = await prisma.deal.findUnique({ where: { id: dealId }, select: { slug: true } });
   revalidateDealPaths(deal?.slug);
