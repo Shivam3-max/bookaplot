@@ -1,4 +1,4 @@
-import { Deal, LocationZone, Post, Testimonial } from "./types";
+import type { Deal, LocationZone, Post, Testimonial } from "./types.ts";
 
 export const DEALS: Deal[] = [
   {

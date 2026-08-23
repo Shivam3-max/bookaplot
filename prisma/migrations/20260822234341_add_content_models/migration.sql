@@ -1,7 +1,3 @@
-npm notice run mondato@0.1.0 npx
-npm notice run prisma migrate diff --from-schema C:\Users\gaura\AppData\Local\Temp\claude\C--Users-gaura-Documents-DD-Projects-bookaplot\0d8a6e1c-fad8-4797-aaab-42185d12206f\scratchpad\schema.before.prisma --to-schema prisma/schema.prisma --script
-Loaded Prisma config from prisma.config.ts.
-
 -- CreateTable
 CREATE TABLE `deals` (
     `id` VARCHAR(191) NOT NULL,
