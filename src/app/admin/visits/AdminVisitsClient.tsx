@@ -48,8 +48,8 @@ export default function AdminVisitsClient({ visits }: { visits: VisitRecord[] })
         ))}
       </div>
 
-      <div className="card overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+      <div className="card table-card overflow-x-auto">
+        <table className="table-stack w-full min-w-[820px] text-sm">
           <thead>
             <tr className="border-b border-line bg-paper text-left text-[10px] font-bold uppercase tracking-wider text-graphite">
               <th className="px-5 py-3">Customer</th>
@@ -71,10 +71,10 @@ export default function AdminVisitsClient({ visits }: { visits: VisitRecord[] })
                   <p className="text-xs text-graphite">{v.phone}</p>
                   {v.updatedByName && <p className="text-[10px] text-graphite/70">Updated by {v.updatedByName}</p>}
                 </td>
-                <td className="max-w-56 px-5 py-3.5 text-xs font-medium">{v.deals.length > 0 ? v.deals.join(" + ") : "—"}</td>
-                <td className="px-5 py-3.5 font-bold">{new Date(v.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</td>
-                <td className="px-5 py-3.5">{v.coordinator}</td>
-                <td className="px-5 py-3.5">
+                <td className="max-w-56 px-5 py-3.5 text-xs font-medium" data-label="Properties">{v.deals.length > 0 ? v.deals.join(" + ") : "—"}</td>
+                <td className="px-5 py-3.5 font-bold" data-label="Date">{new Date(v.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</td>
+                <td className="px-5 py-3.5" data-label="Coordinator">{v.coordinator}</td>
+                <td className="px-5 py-3.5" data-label="Status">
                   <select
                     value={v.status}
                     disabled={isPending && pendingId === v.id}
@@ -84,7 +84,7 @@ export default function AdminVisitsClient({ visits }: { visits: VisitRecord[] })
                     <option>Requested</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option>
                   </select>
                 </td>
-                <td className="max-w-52 px-5 py-3.5 text-xs text-graphite">{v.feedback || "—"}</td>
+                <td className="max-w-52 px-5 py-3.5 text-xs text-graphite" data-label="Feedback">{v.feedback || "—"}</td>
               </tr>
             ))}
           </tbody>

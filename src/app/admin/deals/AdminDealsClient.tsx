@@ -125,7 +125,7 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
           <h1 className="font-display text-2xl font-black">Deals Management</h1>
           <p className="text-sm text-graphite">{deals.length} deals · {deals.filter((d) => d.featured).length} featured</p>
         </div>
-        <button onClick={() => { setCreating((v) => !v); setEditingId(null); }} className="btn-gold !py-2.5">
+        <button onClick={() => { setCreating((v) => !v); setEditingId(null); }} className="btn-gold !py-2.5 max-sm:w-full">
           {creating ? "Close" : "+ Add New Deal"}
         </button>
       </div>
@@ -139,8 +139,8 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
         placeholder="Search deals by title or city…"
       />
 
-      <div className="card overflow-x-auto">
-        <table className="w-full min-w-[860px] text-sm">
+      <div className="card table-card overflow-x-auto">
+        <table className="table-stack w-full min-w-[860px] text-sm">
           <thead>
             <tr className="border-b border-line bg-paper text-left text-[10px] font-bold uppercase tracking-wider text-graphite">
               <th className="px-5 py-3">Deal</th>
@@ -163,16 +163,16 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
                       {d.updatedByName ? `Updated by ${d.updatedByName}` : d.createdByName ? `Created by ${d.createdByName}` : "—"}
                     </p>
                   </td>
-                  <td className="px-5 py-3.5 font-bold">{inr(d.price)}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 font-bold" data-label="Price">{inr(d.price)}</td>
+                  <td className="px-5 py-3.5" data-label="Score">
                     <span className="chip badge-green">{d.score}</span>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5" data-label="Badges">
                     <div className="flex max-w-44 flex-wrap gap-1">
                       {d.badges.slice(0, 2).map((b) => <span key={b} className="chip !text-[10px]">{b}</span>)}
                     </div>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5" data-label="Status">
                     <select
                       value={d.status}
                       disabled={isPending}
@@ -182,7 +182,7 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
                       <option>Ready</option><option>Pre-Launch</option><option>Resale</option><option>Fresh Inventory</option>
                     </select>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5" data-label="Featured">
                     <button
                       onClick={() => toggleFeatured(d.id, d.featured ?? false)}
                       disabled={isPending}
@@ -196,7 +196,7 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
                       />
                     </button>
                   </td>
-                  <td className="px-5 py-3.5 text-right">
+                  <td className="cell-actions px-5 py-3.5 text-right">
                     <Link href={`/deals/${d.slug}`} className="text-xs font-bold" style={{ color: "var(--gold)" }}>View ↗</Link>
                     <button onClick={() => { setEditingId(editingId === d.id ? null : d.id); setCreating(false); }} className="ml-3 text-xs font-bold text-graphite hover:text-ink">
                       {editingId === d.id ? "Close" : "Edit"}
@@ -206,7 +206,7 @@ export default function AdminDealsClient({ deals }: { deals: DealRecord[] }) {
                 </tr>
                 {editingId === d.id && (
                   <tr>
-                    <td colSpan={7} className="bg-paper/60 p-4">
+                    <td colSpan={7} className="cell-form bg-paper/60 p-4">
                       <DealForm deal={d} onCancel={() => setEditingId(null)} />
                     </td>
                   </tr>

@@ -68,15 +68,15 @@ export default function AdminBlogClient({ posts }: { posts: PostRecord[] }) {
           <h1 className="font-display text-2xl font-black">Blog / Insights CMS</h1>
           <p className="text-sm text-graphite">{posts.filter((p) => p.published).length} published · {posts.length} total</p>
         </div>
-        <button onClick={() => { setCreating((v) => !v); setEditingId(null); }} className="btn-gold !py-2.5">
+        <button onClick={() => { setCreating((v) => !v); setEditingId(null); }} className="btn-gold !py-2.5 max-sm:w-full">
           {creating ? "Close" : "+ New Post"}
         </button>
       </div>
 
       {creating && <PostForm onCancel={() => setCreating(false)} />}
 
-      <div className="card overflow-x-auto">
-        <table className="w-full min-w-[720px] text-sm">
+      <div className="card table-card overflow-x-auto">
+        <table className="table-stack w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-line bg-paper text-left text-[10px] font-bold uppercase tracking-wider text-graphite">
               <th className="px-5 py-3">Title</th>
@@ -96,9 +96,9 @@ export default function AdminBlogClient({ posts }: { posts: PostRecord[] }) {
                       {p.updatedByName ? `Updated by ${p.updatedByName}` : p.createdByName ? `Created by ${p.createdByName}` : "—"}
                     </p>
                   </td>
-                  <td className="px-5 py-3.5"><span className="chip badge-steel">{p.category}</span></td>
-                  <td className="px-5 py-3.5 text-xs font-semibold text-graphite">{p.date}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5" data-label="Category"><span className="chip badge-steel">{p.category}</span></td>
+                  <td className="px-5 py-3.5 text-xs font-semibold text-graphite" data-label="Date">{p.date}</td>
+                  <td className="px-5 py-3.5" data-label="Status">
                     <button
                       onClick={() => startTransition(() => togglePostPublished(p.id, !p.published))}
                       disabled={isPending}
@@ -107,7 +107,7 @@ export default function AdminBlogClient({ posts }: { posts: PostRecord[] }) {
                       {p.published ? "Published" : "Draft"}
                     </button>
                   </td>
-                  <td className="px-5 py-3.5 text-right">
+                  <td className="cell-actions px-5 py-3.5 text-right">
                     <Link href={`/insights/${p.slug}`} className="text-xs font-bold" style={{ color: "var(--gold)" }}>View ↗</Link>
                     <button onClick={() => { setEditingId(editingId === p.id ? null : p.id); setCreating(false); }} className="ml-3 text-xs font-bold text-graphite hover:text-ink">
                       {editingId === p.id ? "Close" : "Edit"}
@@ -117,7 +117,7 @@ export default function AdminBlogClient({ posts }: { posts: PostRecord[] }) {
                 </tr>
                 {editingId === p.id && (
                   <tr>
-                    <td colSpan={5} className="bg-paper/60 p-4">
+                    <td colSpan={5} className="cell-form bg-paper/60 p-4">
                       <PostForm post={p} onCancel={() => setEditingId(null)} />
                     </td>
                   </tr>

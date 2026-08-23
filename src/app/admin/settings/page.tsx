@@ -21,12 +21,12 @@ export default async function AdminSettings() {
         <p className="text-sm text-graphite">Admin accounts and search targets.</p>
       </div>
 
-      <div className="card overflow-x-auto">
+      <div className="card table-card overflow-x-auto">
         <div className="border-b border-line px-6 py-4">
           <h2 className="font-display text-lg font-black">Admin Accounts</h2>
           <p className="text-xs text-graphite">Every admin account has full access — there are no granular permission tiers yet.</p>
         </div>
-        <table className="w-full min-w-[560px] text-sm">
+        <table className="table-stack w-full min-w-[560px] text-sm">
           <thead>
             <tr className="border-b border-line bg-paper text-left text-[10px] font-bold uppercase tracking-wider text-graphite">
               <th className="px-6 py-3">Name</th>
@@ -43,8 +43,8 @@ export default async function AdminSettings() {
                   </span>
                   <span className="font-bold">{a.name}</span>
                 </td>
-                <td className="px-6 py-3.5 text-xs font-medium text-graphite">{a.phone}</td>
-                <td className="px-6 py-3.5 text-xs font-medium text-graphite">
+                <td className="px-6 py-3.5 text-xs font-medium text-graphite" data-label="Phone">{a.phone}</td>
+                <td className="px-6 py-3.5 text-xs font-medium text-graphite" data-label="Since">
                   {new Date(a.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                 </td>
               </tr>

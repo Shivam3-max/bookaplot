@@ -67,7 +67,7 @@ export default function AdminAsksClient({ asks }: { asks: AskWithRelations[] }) 
               </div>
             </div>
 
-            <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl bg-paper p-3 text-xs">
+            <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl bg-paper p-3 text-xs sm:grid-cols-3">
               <div><p className="text-[9px] font-bold uppercase tracking-wider text-graphite">Budget</p><p className="mt-0.5 font-semibold">{a.budget}</p></div>
               <div><p className="text-[9px] font-bold uppercase tracking-wider text-graphite">Locations</p><p className="mt-0.5 font-semibold">{a.locations}</p></div>
               <div><p className="text-[9px] font-bold uppercase tracking-wider text-graphite">Urgency</p><p className="mt-0.5 font-semibold">{a.urgency}</p></div>
@@ -91,7 +91,7 @@ export default function AdminAsksClient({ asks }: { asks: AskWithRelations[] }) 
                 className="input flex-1 !py-2.5"
                 placeholder="Write the revert — matched inventory, sheets shared, next steps…"
               />
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button disabled={isPending} onClick={() => send(a.id, false)} className="btn-primary !px-4 !py-2.5 !text-xs disabled:opacity-60">Send Revert</button>
                 <button disabled={isPending} onClick={() => send(a.id, true)} className="btn-gold !px-4 !py-2.5 !text-xs disabled:opacity-60">Revert + Mark Matched</button>
               </div>

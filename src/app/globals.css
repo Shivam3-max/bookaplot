@@ -173,3 +173,142 @@ h1, h2, h3, h4, .font-display {
 }
 
 ::selection { background: var(--gold-soft); color: var(--ink); }
+
+/* ---------------------------------------------------------------
+   Admin: responsive data tables
+   The admin tables carry min-w-[780px]–[860px], so on a phone or an
+   iPad in portrait every row had to be scrolled sideways to be read.
+   Below lg each row collapses into its own card and each cell prints
+   its column name (from data-label) above the value, so a record
+   reads top-to-bottom. Cells with no data-label (the primary
+   name/title cell and the actions cell) render without a caption.
+   --------------------------------------------------------------- */
+@media (max-width: 1023.98px) {
+  .table-stack,
+  .table-stack tbody,
+  .table-stack tr,
+  .table-stack td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-stack {
+    min-width: 0 !important;
+  }
+
+  .table-stack thead {
+    display: none;
+  }
+
+  .table-stack tr {
+    position: relative;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: #fff;
+    padding: 0.35rem 0;
+    box-shadow: 0 1px 2px rgba(17, 17, 17, 0.03);
+  }
+
+  .table-stack tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .table-stack td {
+    padding: 0.5rem 1rem !important;
+    text-align: left !important;
+    border: 0;
+  }
+
+  .table-stack td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--graphite);
+  }
+
+  /* the actions cell sits at the bottom of the card as a divided footer */
+  .table-stack td.cell-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding-top: 0.75rem !important;
+    border-top: 1px solid var(--line);
+  }
+
+  /* comfortable tap targets on touch screens */
+  .table-stack td.cell-actions .btn,
+  .table-stack td.cell-actions .btn-gold,
+  .table-stack td.cell-actions .btn-ghost,
+  .table-stack td.cell-actions button {
+    min-height: 38px;
+  }
+
+  .table-stack select.input {
+    width: 100% !important;
+  }
+
+  /* the wrapper card would otherwise nest a white box inside a white box,
+     so on mobile it steps back and lets each row be its own card */
+  .table-card {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* desktop spacing utilities on action links become double gaps once
+     the actions cell is a flex row with its own gap */
+  .table-stack td.cell-actions > * {
+    margin-left: 0 !important;
+  }
+
+  /* inline edit forms span the full card instead of sitting in a cell */
+  .table-stack td.cell-form {
+    padding: 0.75rem !important;
+    background: transparent !important;
+  }
+}
+
+/* Admin: keep long unbroken strings (emails, slugs, URLs) from
+   forcing the whole page into horizontal scroll on a phone. */
+.admin-main {
+  overflow-x: hidden;
+}
+.admin-main table:not(.table-stack) {
+  min-width: 0;
+}
+
+/* On tablets there is room to set the caption beside its value rather than
+   above it, so a record stays compact instead of running very tall.
+   Every labelled cell holds a single element or text node, so each becomes
+   one grid item next to the ::before caption. */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .table-stack td[data-label] {
+    display: grid;
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .table-stack td[data-label]::before {
+    margin-bottom: 0;
+  }
+
+  /* chips and toggles size to their content instead of stretching
+     across the value column */
+  .table-stack td[data-label] > * {
+    justify-self: start;
+  }
+
+  .table-stack td[data-label] select.input,
+  .table-stack td[data-label] select {
+    max-width: 22rem;
+  }
+}

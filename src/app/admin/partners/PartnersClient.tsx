@@ -43,8 +43,8 @@ export default function PartnersClient({ partners }: { partners: PublicUser[] })
         ))}
       </div>
 
-      <div className="card overflow-x-auto">
-        <table className="w-full min-w-[780px] text-sm">
+      <div className="card table-card overflow-x-auto">
+        <table className="table-stack w-full min-w-[780px] text-sm">
           <thead>
             <tr className="border-b border-line bg-paper text-left text-[10px] font-bold uppercase tracking-wider text-graphite">
               <th className="px-5 py-3">Member</th>
@@ -62,7 +62,7 @@ export default function PartnersClient({ partners }: { partners: PublicUser[] })
                   <p className="text-xs text-graphite">{p.firm || "—"} · {p.phone}</p>
                   {p.updatedByName && <p className="text-[10px] text-graphite/70">Updated by {p.updatedByName}</p>}
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5" data-label={tab === "CP" ? "Territory" : "Budget band"}>
                   {tab === "CP" ? (
                     <select
                       value={p.territory || ""}
@@ -81,9 +81,9 @@ export default function PartnersClient({ partners }: { partners: PublicUser[] })
                     <span className="font-semibold">{p.budget || "—"}</span>
                   )}
                 </td>
-                <td className="px-5 py-3.5 text-xs font-semibold text-graphite">{p.createdAt.toLocaleDateString("en-IN")}</td>
-                <td className="px-5 py-3.5"><span className={`chip ${tone(p.status)}`}>{label[p.status]}</span></td>
-                <td className="px-5 py-3.5 text-right">
+                <td className="px-5 py-3.5 text-xs font-semibold text-graphite" data-label="Joined">{p.createdAt.toLocaleDateString("en-IN")}</td>
+                <td className="px-5 py-3.5" data-label="Status"><span className={`chip ${tone(p.status)}`}>{label[p.status]}</span></td>
+                <td className="cell-actions px-5 py-3.5 text-right">
                   {p.status === "PENDING" && (
                     <button disabled={isPending} onClick={() => update(p.id, "VERIFIED")} className="btn !bg-green !px-3.5 !py-1.5 !text-xs text-white disabled:opacity-60">
                       Verify
