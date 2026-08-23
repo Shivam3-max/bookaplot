@@ -7,9 +7,10 @@ import {
   createSellerSubmission,
   replyToAskRecord,
   updatePartnerStatus as updatePartnerStatusRecord,
+  updateSellerSubmissionStatus,
 } from "@/lib/db";
 import { requireAdmin, requirePartner } from "@/lib/dal";
-import type { PartnerStatus } from "@/lib/db-types";
+import type { PartnerStatus, SubmissionStatus } from "@/lib/db-types";
 
 export async function postAsk(formData: FormData) {
   const user = await requirePartner();
@@ -75,4 +76,11 @@ export async function submitSellerListing(formData: FormData) {
   });
 
   return { ok: true };
+}
+
+export async function updateSubmissionStatus(id: string, status: SubmissionStatus) {
+  await requireAdmin();
+  await updateSellerSubmissionStatus(id, status);
+  revalidatePath("/admin/submissions");
+  revalidatePath("/admin");
 }

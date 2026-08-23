@@ -9,6 +9,8 @@ import type {
   PartnerStatus,
   PublicUser,
   Role,
+  SellerSubmissionRecord,
+  SubmissionStatus,
 } from "@/lib/db-types";
 
 declare global {
@@ -226,6 +228,19 @@ export async function findAuthUserByPhone(phone: string) {
   } satisfies AuthUser;
 }
 
+export async function listAdmins() {
+  await ready();
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT id, name, phone, createdAt FROM users WHERE role = 'ADMIN' ORDER BY createdAt ASC`
+  );
+  return rows.map((row) => ({
+    id: String(row.id),
+    name: String(row.name),
+    phone: String(row.phone),
+    createdAt: row.createdAt as Date,
+  }));
+}
+
 export async function listPartners() {
   await ready();
   const rows = await execute<Record<string, unknown>>(
@@ -398,5 +413,40 @@ export async function createSellerSubmission(input: {
     sql: `INSERT INTO seller_submissions (id, name, phone, propertyDetail, expectedPrice)
           VALUES (?, ?, ?, ?, ?)`,
     args: [makeId(), input.name, input.phone, input.propertyDetail, input.expectedPrice ?? null],
+  });
+}
+
+export async function listSellerSubmissions(): Promise<SellerSubmissionRecord[]> {
+  await ready();
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT id, name, phone, propertyDetail, expectedPrice, status, createdAt
+     FROM seller_submissions ORDER BY createdAt DESC`
+  );
+  return rows.map((row) => ({
+    id: String(row.id),
+    name: String(row.name),
+    phone: String(row.phone),
+    propertyDetail: String(row.propertyDetail),
+    expectedPrice: (row.expectedPrice as string | null) ?? null,
+    status: row.status as SubmissionStatus,
+    createdAt: row.createdAt as Date,
+  }));
+}
+
+export async function countSellerSubmissions(status?: SubmissionStatus) {
+  await ready();
+  const rows = await execute<{ count: number }>(
+    status
+      ? { sql: "SELECT COUNT(*) as count FROM seller_submissions WHERE status = ?", args: [status] }
+      : "SELECT COUNT(*) as count FROM seller_submissions"
+  );
+  return Number(rows[0]?.count ?? 0);
+}
+
+export async function updateSellerSubmissionStatus(id: string, status: SubmissionStatus) {
+  await ready();
+  await execute({
+    sql: `UPDATE seller_submissions SET status = ? WHERE id = ?`,
+    args: [status, id],
   });
 }

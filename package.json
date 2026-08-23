@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 3466",
-    "build": "prisma migrate deploy && node --experimental-strip-types prisma/seed.ts && node --experimental-strip-types prisma/migrate-static-content.ts && next build --webpack",
+    "build": "prisma migrate deploy && node --experimental-strip-types prisma/seed.ts && next build --webpack",
     "start": "next start -p 3466",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",

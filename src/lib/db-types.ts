@@ -48,3 +48,13 @@ export interface AskWithRelations extends AskRecord {
   investor: { name: string };
   replies: AskReplyRecord[];
 }
+
+export interface SellerSubmissionRecord {
+  id: string;
+  name: string;
+  phone: string;
+  propertyDetail: string;
+  expectedPrice: string | null;
+  status: SubmissionStatus;
+  createdAt: Date;
+}
