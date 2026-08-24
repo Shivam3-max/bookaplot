@@ -11,7 +11,6 @@ const NAV = [
   { href: "/deals", label: "Deals" },
   { href: "/locations", label: "Locations" },
   { href: "/map", label: "Tricity Map" },
-  { href: "/calculators", label: "Calculators" },
   { href: "/tools", label: "Tools" },
   { href: "/why-bookaplot", label: "Why Mondato" },
   { href: "/nri", label: "NRI" },
