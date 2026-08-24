@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import type { Deal, LocationZone, Post, Testimonial } from "@/lib/types";
 import type { MandateInfo, Creative } from "@/lib/network-data";
 import type { Prisma } from "@prisma/client";
-import { LOCATIONS as STATIC_LOCATIONS, TESTIMONIALS as STATIC_TESTIMONIALS } from "@/lib/data";
+import { LOCATIONS as STATIC_LOCATIONS, TESTIMONIALS as STATIC_TESTIMONIALS, POSTS as STATIC_POSTS } from "@/lib/data";
 
 const AUDIT_INCLUDE = {
   createdBy: { select: { name: true } },
@@ -12,7 +12,6 @@ const AUDIT_INCLUDE = {
 } as const;
 
 type DealRow = Prisma.DealGetPayload<{ include: typeof AUDIT_INCLUDE }>;
-type PostRow = Prisma.PostGetPayload<{ include: typeof AUDIT_INCLUDE }>;
 type LeadRow = Prisma.LeadGetPayload<Record<string, never>>;
 
 interface AuditFields {
@@ -82,26 +81,6 @@ function toDeal(row: DealRow): DealRecord {
   };
 }
 
-function toPost(row: PostRow): PostRecord {
-  return {
-    id: row.id,
-    createdById: row.createdById,
-    createdByName: row.createdBy?.name ?? null,
-    updatedById: row.updatedById,
-    updatedByName: row.updatedBy?.name ?? null,
-    deletedById: row.deletedById,
-    deletedByName: row.deletedBy?.name ?? null,
-    slug: row.slug,
-    title: row.title,
-    category: row.category,
-    excerpt: row.excerpt,
-    date: row.date.toISOString().slice(0, 10),
-    readMins: row.readMins,
-    body: row.body as unknown as string[],
-    published: row.published,
-  };
-}
-
 export async function listDeals(): Promise<DealRecord[]> {
   const rows = await prisma.deal.findMany({ where: { deletedAt: null }, include: AUDIT_INCLUDE, orderBy: { createdAt: "desc" } });
   return rows.map(toDeal);
@@ -135,18 +114,28 @@ export async function getLocation(slug: string): Promise<LocationRecord | undefi
   return STATIC_LOCATION_RECORDS.find((l) => l.slug === slug);
 }
 
-export async function listPosts(opts?: { includeUnpublished?: boolean }): Promise<PostRecord[]> {
-  const rows = await prisma.post.findMany({
-    where: { deletedAt: null, ...(opts?.includeUnpublished ? {} : { published: true }) },
-    include: AUDIT_INCLUDE,
-    orderBy: { date: "desc" },
-  });
-  return rows.map(toPost);
+// Posts stay static (src/lib/data.ts) rather than DB-backed, same reasoning
+// as listLocations() above. Note: /admin/blog's create/edit/delete/publish
+// actions still write to the Post table, but nothing here reads it anymore —
+// those controls no longer affect what the public site shows.
+const STATIC_POST_RECORDS: PostRecord[] = STATIC_POSTS.map((p, i) => ({
+  id: i + 1,
+  createdById: null,
+  createdByName: null,
+  updatedById: null,
+  updatedByName: null,
+  deletedById: null,
+  deletedByName: null,
+  published: true,
+  ...p,
+})).sort((a, b) => (a.date < b.date ? 1 : -1));
+
+export async function listPosts(): Promise<PostRecord[]> {
+  return STATIC_POST_RECORDS;
 }
 
 export async function getPost(slug: string): Promise<PostRecord | undefined> {
-  const row = await prisma.post.findFirst({ where: { slug, deletedAt: null }, include: AUDIT_INCLUDE });
-  return row ? toPost(row) : undefined;
+  return STATIC_POST_RECORDS.find((p) => p.slug === slug);
 }
 
 // Testimonials stay static (src/lib/data.ts) rather than DB-backed — there's

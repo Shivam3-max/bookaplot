@@ -4,7 +4,7 @@ import AdminBlogClient from "./AdminBlogClient";
 
 export default async function AdminBlog() {
   await requireAdmin();
-  const posts = await listPosts({ includeUnpublished: true });
+  const posts = await listPosts();
   return (
     <div className="space-y-5">
       <AdminBlogClient posts={posts} />
