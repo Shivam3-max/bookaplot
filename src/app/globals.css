@@ -312,3 +312,35 @@ h1, h2, h3, h4, .font-display {
     max-width: 22rem;
   }
 }
+
+/* Print: the agreement draft and the document checklist are meant to be
+   printed or saved as PDF, so drop the site chrome and let the sheet run
+   full width in black on white. */
+@media print {
+  header,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .print-sheet {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .print-sheet p,
+  .print-sheet h2,
+  .print-sheet h3 {
+    color: #000 !important;
+  }
+
+  .card {
+    break-inside: avoid;
+  }
+}
