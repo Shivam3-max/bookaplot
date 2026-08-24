@@ -95,20 +95,47 @@ function dealDataFromForm(formData: FormData) {
   };
 }
 
-export async function createDeal(formData: FormData) {
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // stored as base64 in the DB — keeps rows well under MySQL's default max_allowed_packet
+const MAX_IMAGES = 12;
+
+// Images are stored as data: URLs directly on the deal row (no filesystem
+// dependency). "existingImages" carries forward images kept from a previous
+// save; "newImages" are freshly uploaded files to append.
+async function imagesFromForm(formData: FormData): Promise<{ images: string[] } | { error: string }> {
+  const kept = formData.getAll("existingImages").map(String).filter(Boolean);
+  const files = formData.getAll("newImages").filter((f): f is File => f instanceof File && f.size > 0);
+
+  const uploaded: string[] = [];
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) return { error: `"${file.name}" isn't an image.` };
+    if (file.size > MAX_IMAGE_BYTES) return { error: `"${file.name}" is over the 4MB limit.` };
+    const buffer = Buffer.from(await file.arrayBuffer());
+    uploaded.push(`data:${file.type};base64,${buffer.toString("base64")}`);
+  }
+
+  const images = [...kept, ...uploaded];
+  if (images.length > MAX_IMAGES) return { error: `Max ${MAX_IMAGES} images per deal.` };
+  return { images };
+}
+
+export async function createDeal(formData: FormData): Promise<{ ok: true } | { error: string }> {
   const admin = await requireAdmin();
   const data = dealDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
-  await prisma.deal.create({ data: { ...data, createdById: admin.id } });
+  const imgResult = await imagesFromForm(formData);
+  if ("error" in imgResult) return { error: imgResult.error };
+  await prisma.deal.create({ data: { ...data, images: imgResult.images, createdById: admin.id } });
   revalidateDealPaths(data.slug);
   return { ok: true };
 }
 
-export async function updateDeal(id: number, formData: FormData) {
+export async function updateDeal(id: number, formData: FormData): Promise<{ ok: true } | { error: string }> {
   const admin = await requireAdmin();
   const data = dealDataFromForm(formData);
   if (!data.slug || !data.title) return { error: "Slug and title are required." };
-  await prisma.deal.update({ where: { id }, data: { ...data, updatedById: admin.id } });
+  const imgResult = await imagesFromForm(formData);
+  if ("error" in imgResult) return { error: imgResult.error };
+  await prisma.deal.update({ where: { id }, data: { ...data, images: imgResult.images, updatedById: admin.id } });
   revalidateDealPaths(data.slug);
   return { ok: true };
 }

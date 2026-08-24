@@ -227,6 +227,7 @@ model Deal {
   mapY               Int
   hue                Int
   faqs               Json // { q, a }[]
+  images             Json? // string[] of data: URLs, uploaded via the admin form
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   deletedAt          DateTime?

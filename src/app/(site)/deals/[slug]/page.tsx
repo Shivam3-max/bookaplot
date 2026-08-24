@@ -48,14 +48,26 @@ export default async function DealDetail({ params }: { params: Promise<{ slug: s
           <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
             <Reveal>
               <div className="card overflow-hidden">
-                <DealVisual deal={deal} className="aspect-[16/9]" />
+                {deal.images && deal.images.length > 0 ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={deal.images[0]} alt={deal.title} className="aspect-[16/9] w-full object-cover" />
+                ) : (
+                  <DealVisual deal={deal} className="aspect-[16/9]" />
+                )}
               </div>
               <div className="mt-3 grid grid-cols-3 gap-3">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="card overflow-hidden opacity-80" style={{ filter: `hue-rotate(${i * 14}deg)` }}>
-                    <DealVisual deal={deal} className="aspect-[4/3]" />
-                  </div>
-                ))}
+                {[0, 1, 2].map((i) =>
+                  deal.images && deal.images[i + 1] ? (
+                    <div key={i} className="card overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={deal.images[i + 1]} alt={deal.title} className="aspect-[4/3] w-full object-cover" />
+                    </div>
+                  ) : (
+                    <div key={i} className="card overflow-hidden opacity-80" style={{ filter: `hue-rotate(${i * 14}deg)` }}>
+                      <DealVisual deal={deal} className="aspect-[4/3]" />
+                    </div>
+                  )
+                )}
               </div>
             </Reveal>
             <Reveal delay={120}>

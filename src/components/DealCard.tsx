@@ -26,7 +26,16 @@ export default function DealCard({ deal }: { deal: Deal }) {
   return (
     <article className="card card-hover group relative flex flex-col overflow-hidden">
       <Link href={`/deals/${deal.slug}`} className="relative block h-44 overflow-hidden">
-        <DealVisual deal={deal} className="h-full w-full transition-transform duration-500 group-hover:scale-[1.04]" />
+        {deal.images && deal.images.length > 0 ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={deal.images[0]}
+            alt={deal.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <DealVisual deal={deal} className="h-full w-full transition-transform duration-500 group-hover:scale-[1.04]" />
+        )}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {deal.badges.slice(0, 2).map((b) => (
             <span key={b} className={badgeClass(b)}>

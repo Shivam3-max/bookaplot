@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import type { Deal, LocationZone, Post, Testimonial } from "@/lib/types";
 import type { MandateInfo, Creative } from "@/lib/network-data";
 import type { Prisma } from "@prisma/client";
+import { LOCATIONS as STATIC_LOCATIONS, TESTIMONIALS as STATIC_TESTIMONIALS } from "@/lib/data";
 
 const AUDIT_INCLUDE = {
   createdBy: { select: { name: true } },
@@ -11,9 +12,7 @@ const AUDIT_INCLUDE = {
 } as const;
 
 type DealRow = Prisma.DealGetPayload<{ include: typeof AUDIT_INCLUDE }>;
-type LocationRow = Prisma.LocationZoneGetPayload<Record<string, never>>;
 type PostRow = Prisma.PostGetPayload<{ include: typeof AUDIT_INCLUDE }>;
-type TestimonialRow = Prisma.TestimonialGetPayload<Record<string, never>>;
 type LeadRow = Prisma.LeadGetPayload<Record<string, never>>;
 
 interface AuditFields {
@@ -79,27 +78,7 @@ function toDeal(row: DealRow): DealRecord {
     mapY: row.mapY,
     hue: row.hue,
     faqs: row.faqs as unknown as { q: string; a: string }[],
-  };
-}
-
-function toLocation(row: LocationRow): LocationRecord {
-  return {
-    id: row.id,
-    slug: row.slug as LocationZone["slug"],
-    name: row.name,
-    tagline: row.tagline,
-    overview: row.overview,
-    maturity: row.maturity as LocationZone["maturity"],
-    growthScore: row.growthScore,
-    priceBand: row.priceBand,
-    avgPerSqYd: row.avgPerSqYd,
-    idealBuyer: row.idealBuyer as unknown as string[],
-    whyBuy: row.whyBuy as unknown as string[],
-    connectivity: row.connectivity as unknown as { label: string; value: string }[],
-    trend: row.trend as unknown as number[],
-    mapX: row.mapX,
-    mapY: row.mapY,
-    hue: row.hue,
+    images: (row.images as unknown as string[] | null) ?? [],
   };
 }
 
@@ -123,10 +102,6 @@ function toPost(row: PostRow): PostRecord {
   };
 }
 
-function toTestimonial(row: TestimonialRow): TestimonialRecord {
-  return { id: row.id, order: row.order, quote: row.quote, name: row.name, context: row.context };
-}
-
 export async function listDeals(): Promise<DealRecord[]> {
   const rows = await prisma.deal.findMany({ where: { deletedAt: null }, include: AUDIT_INCLUDE, orderBy: { createdAt: "desc" } });
   return rows.map(toDeal);
@@ -147,14 +122,17 @@ export async function dealsByCity(city: string): Promise<DealRecord[]> {
   return rows.map(toDeal);
 }
 
+// Locations stay static (src/lib/data.ts) rather than DB-backed — there's no
+// admin UI to manage them, so a fresh deploy with an empty database must
+// still show the Tricity map fully populated.
+const STATIC_LOCATION_RECORDS: LocationRecord[] = STATIC_LOCATIONS.map((l, i) => ({ id: i + 1, ...l }));
+
 export async function listLocations(): Promise<LocationRecord[]> {
-  const rows = await prisma.locationZone.findMany({ where: { deletedAt: null }, orderBy: { name: "asc" } });
-  return rows.map(toLocation);
+  return [...STATIC_LOCATION_RECORDS].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getLocation(slug: string): Promise<LocationRecord | undefined> {
-  const row = await prisma.locationZone.findFirst({ where: { slug, deletedAt: null } });
-  return row ? toLocation(row) : undefined;
+  return STATIC_LOCATION_RECORDS.find((l) => l.slug === slug);
 }
 
 export async function listPosts(opts?: { includeUnpublished?: boolean }): Promise<PostRecord[]> {
@@ -171,9 +149,16 @@ export async function getPost(slug: string): Promise<PostRecord | undefined> {
   return row ? toPost(row) : undefined;
 }
 
+// Testimonials stay static (src/lib/data.ts) rather than DB-backed — there's
+// no admin UI to manage them, same reasoning as listLocations() above.
+const STATIC_TESTIMONIAL_RECORDS: TestimonialRecord[] = STATIC_TESTIMONIALS.map((t, i) => ({
+  id: i + 1,
+  order: i + 1,
+  ...t,
+}));
+
 export async function listTestimonials(): Promise<TestimonialRecord[]> {
-  const rows = await prisma.testimonial.findMany({ where: { deletedAt: null }, orderBy: { order: "asc" } });
-  return rows.map(toTestimonial);
+  return STATIC_TESTIMONIAL_RECORDS;
 }
 
 export async function listMandates(): Promise<Record<string, MandateRecord>> {

@@ -68,6 +68,7 @@ export interface Deal {
   mapY: number;
   hue: number; // visual placeholder tint
   faqs: { q: string; a: string }[];
+  images?: string[]; // uploaded photos, as data: URLs
 }
 
 export interface LocationZone {

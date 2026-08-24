@@ -9,12 +9,13 @@ import { inr } from "@/lib/format";
 function DealForm({ deal, onCancel }: { deal?: DealRecord; onCancel: () => void }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>(deal?.images ?? []);
 
   const submit = (formData: FormData) => {
     setError(null);
     startTransition(async () => {
       const result = deal ? await updateDeal(deal.id, formData) : await createDeal(formData);
-      if (result?.error) {
+      if ("error" in result) {
         setError(result.error);
         return;
       }
@@ -79,6 +80,32 @@ function DealForm({ deal, onCancel }: { deal?: DealRecord; onCancel: () => void 
         <div><label className="label">Demand drivers (one per line)</label><textarea name="demandDrivers" defaultValue={deal ? joinLines(deal.demandDrivers) : ""} className="input min-h-20" /></div>
         <div><label className="label">Location advantages (one per line: Label: Value)</label><textarea name="locationAdvantages" defaultValue={deal ? joinLA(deal.locationAdvantages) : ""} className="input min-h-20" /></div>
         <div className="sm:col-span-2"><label className="label">FAQs (one per line: Question|Answer)</label><textarea name="faqs" defaultValue={deal ? joinFaqs(deal.faqs) : ""} className="input min-h-20" /></div>
+      </div>
+
+      <div>
+        <label className="label">Photos (max 12, 4MB each)</label>
+        {images.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {images.map((url, i) => (
+              <Fragment key={i}>
+                <div className="group relative h-20 w-20 overflow-hidden rounded-lg border border-line">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate/80 text-xs font-bold text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    aria-label="Remove image"
+                  >
+                    ×
+                  </button>
+                </div>
+                <input type="hidden" name="existingImages" value={url} />
+              </Fragment>
+            ))}
+          </div>
+        )}
+        <input type="file" name="newImages" multiple accept="image/*" className="input" />
       </div>
 
       <div className="flex flex-wrap gap-4">
