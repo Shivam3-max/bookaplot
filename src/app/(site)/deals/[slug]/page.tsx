@@ -11,17 +11,17 @@ import DealActions from "./DealActions";
 import Faq from "./Faq";
 import Gate from "@/components/Gate";
 
-export async function generateStaticParams() {
-  const deals = await listDeals();
-  return deals.map((d) => ({ slug: d.slug }));
-}
+// No generateStaticParams: this route is always dynamically rendered (the
+// root layout reads the session cookie), so pre-listing slugs produced no
+// static pages — it only added a build-time database round-trip that breaks
+// `next build` on hosts where the DB isn't reachable from the build step.
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const deal = await getDeal((await params).slug);
   if (!deal) return {};
   return {
     title: `${deal.title} — ${deal.cityLabel}`,
-    description: deal.overview.slice(0, 155),
+    description: (deal.overview ?? "").slice(0, 155),
   };
 }
 
